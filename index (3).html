@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POINTAGE PHYSIQUE — AZURA 45</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1a5c2a;--green-dark:#0f3d1c;--green-light:#e8f5eb;--green-text:#1a5c2a;--gold:#d4930a;--gold-light:#fef3dc;--gold-dark:#a06d00;
+  --red-light:#FCEBEB;--red:#A32D2D;--red-border:#F09595;
+  --amber-light:var(--gold-light);--amber:var(--gold-dark);--amber-border:var(--gold);
+  --blue-light:#E6F1FB;--blue:#0C447C;--blue-border:#85B7EB;
+  --purple-light:#EEEDFE;--purple:#3C3489;--purple-border:#AFA9EC;
+  --bg:#f4f6f2;--surface:#fff;--surface2:#eef1eb;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --text:#1a1a18;--text2:#5a5a56;--text3:#9a9a94;
+  --radius:10px;--radius-lg:14px;
+  --font:'IBM Plex Sans Arabic',sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000}
+.login-box{background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:2.5rem 2rem;width:320px;text-align:center}
+.login-logo{font-size:13px;font-weight:600;letter-spacing:1.5px;color:var(--green);margin-bottom:4px}
+.login-title{font-size:22px;font-weight:600;margin-bottom:6px}
+.login-sub{font-size:12px;color:var(--text3);margin-bottom:2rem}
+.login-box input{width:100%;padding:10px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:14px;font-family:var(--font);background:var(--surface2);color:var(--text);margin-bottom:12px;outline:none}
+.login-box input:focus{border-color:var(--green)}
+.login-btn{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-family:var(--font);font-weight:500;cursor:pointer}
+.login-btn:hover{background:var(--green-dark)}
+.login-err{font-size:12px;color:var(--red);margin-top:8px;display:none}
+/* APP */
+#app-screen{display:none;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:0.5px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:100}
+.app-title{font-size:15px;font-weight:600;letter-spacing:.3px}
+.app-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.date-badge{font-size:11px;color:var(--text2);background:var(--surface2);padding:4px 10px;border-radius:20px;border:0.5px solid var(--border)}
+.save-ind{font-size:11px;padding:4px 10px;border-radius:20px;display:none;background:var(--green-light);color:var(--green-text)}
+.logout-btn{font-size:11px;color:var(--text3);background:transparent;border:0.5px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;font-family:var(--font)}
+.logout-btn:hover{background:var(--surface2)}
+.main{padding:1.25rem 20px;max-width:960px;margin:0 auto;position:relative}
+.main::before{content:'';position:fixed;top:54px;left:0;right:0;bottom:0;background:transparent;opacity:0.07;pointer-events:none;z-index:0}
+.main>*{position:relative;z-index:1}
+/* TABS */
+.page-tabs{display:flex;gap:0;margin-bottom:1.5rem;border:0.5px solid var(--border2);border-radius:var(--radius);overflow:hidden;width:fit-content;flex-wrap:wrap}
+.page-tab{padding:8px 15px;font-size:12px;font-family:var(--font);cursor:pointer;color:var(--text2);background:transparent;border:none;border-right:0.5px solid var(--border2)}
+.page-tab:last-child{border-right:none}
+.page-tab.active{background:var(--green);color:#fff}
+.page-tab:hover:not(.active){background:var(--surface2)}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+.stat{background:var(--surface2);border-radius:var(--radius);padding:10px 14px;border:0.5px solid var(--border)}
+.stat-l{font-size:11px;color:var(--text3);margin-bottom:3px}
+.stat-v{font-size:20px;font-weight:600}
+/* LEGEND */
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:1rem}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.leg-dot{width:9px;height:9px;border-radius:50%}
+/* CHEFS NAV */
+.chefs-nav{display:flex;flex-direction:column;gap:4px;min-width:130px;width:130px;flex-shrink:0;padding:0 12px 0 0;border-left:2px solid #e8f5eb;margin-left:16px}
+.chef-tab-wrap{display:flex;flex-direction:column;align-items:stretch;gap:2px;width:100%}
+.tab{padding:6px 13px;border-radius:20px;font-size:12px;font-family:var(--font);cursor:pointer;border:0.5px solid var(--border2);color:var(--text2);background:transparent}
+.tab.active{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 2px 8px rgba(26,92,42,0.3)}
+.tab-actions{display:flex;gap:2px;justify-content:center;margin-top:2px}
+.icon-btn{background:transparent;border:0.5px solid var(--border);border-radius:5px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:22px;height:20px}
+.icon-btn:hover{background:var(--surface2)}
+.icon-btn-del{border-color:var(--red-border)}.icon-btn-del:hover{background:var(--red-light)}
+.icon-btn-edit{border-color:var(--purple-border)}.icon-btn-edit:hover{background:var(--purple-light)}
+.btn-new-chef{padding:6px 12px;border-radius:20px;font-size:11px;font-family:var(--font);cursor:pointer;border:0.5px solid var(--green);color:var(--green);background:transparent;align-self:flex-start}
+.btn-new-chef:hover{background:var(--green-light)}
+/* CARDS */
+.chef-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);margin-bottom:0.75rem;overflow:hidden}
+.chef-head{display:flex;align-items:center;gap:12px;padding:11px 15px;cursor:pointer}
+.chef-head:hover{background:var(--surface2)}
+.task-name-txt{font-size:13px;font-weight:500}
+.task-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.task-badge{font-size:11px;background:var(--blue-light);color:var(--blue);padding:2px 8px;border-radius:10px;white-space:nowrap}
+.chev{color:var(--text3);font-size:11px;margin-left:4px}
+.chef-body{display:none;border-top:0.5px solid var(--border)}
+.chef-body.open{display:block}
+.task-section{padding:10px 15px}
+/* WORKER ROWS */
+.worker-row{display:flex;align-items:center;gap:5px;padding:6px 0;border-bottom:0.5px solid var(--border);flex-wrap:wrap}
+.worker-row:last-of-type{border-bottom:none}
+.wid{font-size:14px;font-weight:500;min-width:60px;font-family:var(--mono)}
+.wid.unknown{color:var(--red)!important;background:var(--red-light);border-radius:5px;padding:1px 6px}
+.wname{flex:1;font-size:13px;color:var(--text2);min-width:70px}
+.status-badge{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap}
+.s-present{background:var(--green-light);color:var(--green-text)}
+.s-abs{background:var(--red-light);color:var(--red)}
+.s-rps{background:var(--amber-light);color:var(--amber)}
+.btn-xs{background:transparent;border:0.5px solid var(--border2);border-radius:5px;padding:2px 7px;font-size:11px;font-family:var(--font);cursor:pointer;color:var(--text2);white-space:nowrap}
+.btn-xs:hover{background:var(--surface2)}
+.btn-abs{border-color:var(--red-border);color:var(--red)}.btn-abs:hover,.btn-abs.on{background:var(--red-light)}
+.btn-abs.on{border-color:#E24B4A;font-weight:600}
+.btn-rps{border-color:var(--amber-border);color:var(--amber)}.btn-rps:hover,.btn-rps.on{background:var(--amber-light)}
+.btn-rps.on{border-color:#BA7517;font-weight:600}
+.w-icon-btn{background:transparent;border:0.5px solid var(--border);border-radius:5px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:24px;height:20px}
+.w-icon-btn:hover{background:var(--surface2)}
+.w-btn-edit{border-color:var(--purple-border)}.w-btn-edit:hover{background:var(--purple-light)}
+.w-btn-tr{border-color:var(--blue-border)}.w-btn-tr:hover{background:var(--blue-light)}
+.w-btn-del{border-color:var(--red-border)}.w-btn-del:hover{background:var(--red-light)}
+/* ADD ROW — pointage lookup */
+.add-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.add-row input{flex:1;min-width:90px;font-size:12px;font-family:var(--font);padding:5px 8px;border:0.5px solid var(--border2);border-radius:6px;background:var(--surface2);color:var(--text);outline:none}
+.add-row input:focus{border-color:var(--green)}
+.add-row .name-preview{font-size:12px;color:var(--green-text);background:var(--green-light);padding:4px 10px;border-radius:6px;display:none;white-space:nowrap}
+.add-row .name-preview.unknown{color:var(--red);background:var(--red-light)}
+.btn-add{background:var(--green);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-family:var(--font);cursor:pointer;white-space:nowrap}
+.btn-add:hover{background:var(--green-dark)}
+.empty{font-size:12px;color:var(--text3);padding:4px 0}
+/* MODALS */
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:500}
+.modal-wrap.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius-lg);border:0.5px solid var(--border2);padding:1.5rem;width:320px;max-width:90vw}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:14px}
+.modal select,.modal-input{width:100%;font-size:13px;font-family:var(--font);margin-bottom:10px;padding:7px 10px;border:0.5px solid var(--border2);border-radius:7px;background:var(--surface2);color:var(--text);outline:none}
+.modal select:focus,.modal-input:focus{border-color:var(--green)}
+.modal-info{font-size:12px;color:var(--text2);margin-bottom:10px}
+.modal-lbl{font-size:12px;color:var(--text3);margin-bottom:4px}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.btn-cancel{background:transparent;border:0.5px solid var(--border2);border-radius:7px;padding:6px 14px;font-size:13px;font-family:var(--font);cursor:pointer;color:var(--text2)}
+.btn-cancel:hover{background:var(--surface2)}
+.task-checks{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;max-height:180px;overflow-y:auto}
+.task-check{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.task-check input{accent-color:var(--green);width:14px;height:14px}
+.warn-box{font-size:13px;color:var(--red);background:var(--red-light);padding:10px;border-radius:7px;margin-bottom:12px}
+/* RAPPORT */
+.rapport-topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.5rem}
+.rapport-topbar-title{font-size:15px;font-weight:600}
+.btn-excel{display:inline-flex;align-items:center;gap:6px;background:#1D6F42;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-family:var(--font);cursor:pointer;font-weight:500}
+.btn-excel:hover{background:#155232}
+.rapport-section{margin-bottom:2rem}
+.rapport-section-title{font-size:14px;font-weight:600;margin-bottom:12px;padding-bottom:6px;border-bottom:0.5px solid var(--border)}
+.chef-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:1.5rem}
+.chef-summary-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:13px 15px}
+.cscard-name{font-size:13px;font-weight:600;margin-bottom:10px;padding-bottom:7px;border-bottom:0.5px solid var(--border)}
+.cscard-stats{display:flex;gap:7px}
+.cscard-stat{flex:1;background:var(--surface2);border-radius:7px;padding:7px 8px;text-align:center}
+.cscard-stat-v{font-size:18px;font-weight:600}
+.cscard-stat-l{font-size:10px;color:var(--text3);margin-top:2px}
+.cscard-total{background:var(--green-light);border-radius:7px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cscard-total-l{font-size:11px;color:var(--green-text)}
+.cscard-total-v{font-size:15px;font-weight:600;color:var(--green-text)}
+.report-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.report-row{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:0.5px solid var(--border);flex-wrap:wrap}
+.report-row:last-child{border-bottom:none}
+.r-id{font-size:14px;font-weight:500;min-width:60px;font-family:var(--mono)}
+.r-name{flex:1;font-size:13px;color:var(--text2);min-width:80px}
+.r-task{font-size:11px;color:var(--text2);background:var(--surface2);padding:2px 7px;border-radius:8px;border:0.5px solid var(--border)}
+.r-chef{font-size:11px;color:var(--blue);background:var(--blue-light);padding:2px 7px;border-radius:8px}
+.empty-report{text-align:center;padding:2rem;font-size:13px;color:var(--text3)}
+/* SEARCH */
+.search-box{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem}
+.search-row{display:flex;gap:8px;align-items:center}
+.search-row input{flex:1;font-size:13px;font-family:var(--font);padding:8px 12px;border:0.5px solid var(--border2);border-radius:7px;background:var(--surface2);color:var(--text);outline:none}
+.search-row input:focus{border-color:var(--green)}
+.search-row button{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-family:var(--font);cursor:pointer}
+.result-card{background:var(--surface2);border-radius:var(--radius);padding:13px 15px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:1rem;border:0.5px solid var(--border)}
+.result-field{display:flex;flex-direction:column;gap:2px}
+.result-label{font-size:11px;color:var(--text3)}
+.result-value{font-size:14px;font-weight:500}
+.result-divider{width:0.5px;height:34px;background:var(--border2);align-self:center}
+.result-not-found{font-size:13px;color:var(--red);background:var(--red-light);padding:10px 14px;border-radius:7px;margin-top:10px}
+/* TACHES */
+.tasks-mgmt{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem}
+.tasks-mgmt-header{padding:12px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border)}
+.tasks-mgmt-title{font-size:14px;font-weight:600}
+.task-mgmt-row{display:flex;align-items:center;gap:8px;padding:9px 15px;border-bottom:0.5px solid var(--border)}
+.task-mgmt-row:last-child{border-bottom:none}
+.task-mgmt-name{flex:1;font-size:13px}
+/* HISTORIQUE */
+.btn-save-day{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:13px;font-family:var(--font);cursor:pointer;font-weight:500}
+.btn-save-day:hover{background:var(--green-dark)}
+.hist-days-list{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1.5rem}
+.hist-day-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-family:var(--font);cursor:pointer;border:0.5px solid var(--border2);color:var(--text2);background:transparent}
+.hist-day-chip:hover{background:var(--surface2)}
+.hist-day-chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.hist-empty{text-align:center;padding:3rem;font-size:13px;color:var(--text3);background:var(--surface2);border-radius:var(--radius-lg);border:0.5px solid var(--border)}
+.hist-search{display:flex;gap:8px;align-items:center;margin-bottom:1.5rem}
+.hist-search input[type=date]{font-size:13px;font-family:var(--font);padding:7px 10px;border:0.5px solid var(--border2);border-radius:7px;background:var(--surface2);color:var(--text);outline:none}
+.hist-view-banner{background:var(--green-light);border-radius:var(--radius);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:8px;border:0.5px solid #9FE1CB}
+.hist-view-banner-txt{font-size:13px;color:var(--green-text);font-weight:600}
+.hist-view-banner-sub{font-size:12px;color:#3B6D11;margin-top:2px}
+/* LISTE PRESENT */
+.liste-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.25rem}
+.liste-title{font-size:15px;font-weight:600}
+.liste-search{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.liste-search input{flex:1;min-width:150px;font-size:13px;font-family:var(--font);padding:7px 10px;border:0.5px solid var(--border2);border-radius:7px;background:var(--surface2);color:var(--text);outline:none}
+.liste-search input:focus{border-color:var(--green)}
+.liste-table-wrap{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem}
+.liste-table-head{display:grid;grid-template-columns:1fr 2fr 1fr 80px;gap:0;padding:9px 15px;background:var(--surface2);border-bottom:0.5px solid var(--border);font-size:11px;font-weight:600;color:var(--text3)}
+.liste-row{display:grid;grid-template-columns:1fr 2fr 1fr 80px;gap:0;padding:9px 15px;border-bottom:0.5px solid var(--border);align-items:center}
+.liste-row:last-child{border-bottom:none}
+.liste-row:hover{background:var(--surface2)}
+.liste-cell{font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.liste-cell.mono{font-family:var(--mono);font-size:13px;font-weight:500}
+.liste-cell.pt{color:var(--blue);font-family:var(--mono);font-weight:500}
+.liste-actions{display:flex;gap:4px;justify-content:flex-end}
+.liste-empty{text-align:center;padding:3rem;font-size:13px;color:var(--text3)}
+.liste-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
+.liste-stat-chip{background:var(--surface2);border:0.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2)}
+.liste-stat-chip span{font-weight:600;color:var(--text)}
+@media(max-width:600px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .chef-summary-grid{grid-template-columns:1fr}
+  .liste-table-head,.liste-row{grid-template-columns:1fr 2fr 80px}
+  .liste-table-head .col-cin,.liste-row .col-cin{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="login-screen" style="position:fixed;inset:0;display:flex;align-items:stretch;justify-content:center;z-index:1000;background:#0f3d1c">
+  <div style="flex:1;max-width:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 2rem;background:#fff;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-60px;left:-60px;width:200px;height:200px;background:#fef3dc;border-radius:50%;opacity:.5"></div>
+    <div style="position:absolute;bottom:-40px;right:-40px;width:150px;height:150px;background:#e8f5eb;border-radius:50%;opacity:.6"></div>
+    <div style="position:relative;z-index:1;text-align:center;margin-bottom:2.5rem">
+      <div style="font-size:64px;margin-bottom:8px">🐞</div>
+      <div style="font-size:18px;font-weight:700;color:#1a5c2a;letter-spacing:1px;margin-top:10px">POINTAGE PHYSIQUE</div>
+    </div>
+    <div style="position:relative;z-index:1;width:100%">
+      <input type="password" id="pwd-input" placeholder="🔒  Mot de passe" onkeydown="if(event.key==='Enter')tryLogin()" style="width:100%;padding:13px 16px;border:2px solid #e0e0da;border-radius:10px;font-size:14px;font-family:var(--font);background:#f4f6f2;color:#1a1f18;margin-bottom:12px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='#1a5c2a'" onblur="this.style.borderColor='#e0e0da'">
+      <button class="login-btn" onclick="tryLogin()" style="width:100%;padding:14px;background:#1a5c2a;color:#fff;border:none;border-radius:10px;font-size:15px;font-family:var(--font);font-weight:700;cursor:pointer;letter-spacing:.3px">🔐 Connexion</button>
+      <div class="login-err" id="login-err" style="font-size:12px;color:#A32D2D;margin-top:8px;display:none;text-align:center">❌ Mot de passe incorrect. Réessayez.</div>
+    </div>
+  </div>
+  <div style="flex:1;background:#1a5c2a;display:none;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden" id="login-right-panel">
+    <div style="position:absolute;width:300px;height:300px;top:-100px;right:-100px;border-radius:50%;background:rgba(255,255,255,0.05)"></div>
+    <div style="position:absolute;width:200px;height:200px;bottom:-60px;left:-60px;border-radius:50%;background:rgba(255,255,255,0.05)"></div>
+    <div style="text-align:center;color:#fff;position:relative;z-index:1">
+      <div style="font-size:80px">🌿</div>
+      <div style="font-size:28px;font-weight:800;margin-bottom:8px">Azura 45</div>
+      <div style="font-size:14px;opacity:.75;line-height:1.8">نظام تسيير الحضور اليومي<br>لعمال الضيعة الفلاحية</div>
+    </div>
+  </div>
+</div>
+
+<div id="app-screen">
+  <div class="topbar" style="background:#1a5c2a;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:100;min-height:54px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:22px">🐞</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#fff;letter-spacing:.3px">POINTAGE PHYSIQUE — AZURA 45</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:1px">إدارة الفرق والعمال</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="date-badge" id="date-badge" style="font-size:11px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.12);padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.2)"></div>
+      <div id="save-ind" class="save-ind">Enregistré ✓</div>
+      
+      <button onclick="refreshData()" title="Actualiser" style="font-size:16px;color:rgba(255,255,255,0.8);background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:2px 10px;cursor:pointer;line-height:1.4">↻</button>
+      <button class="logout-btn" onclick="logout()" id="logout-btn" style="font-size:11px;color:rgba(255,255,255,0.7);background:transparent;border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:4px 12px;cursor:pointer;font-family:var(--font)">Déconnexion</button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="page-tabs">
+      <button class="page-tab active" onclick="setPage('pointage')" id="tab-pointage">Pointage</button>
+      <button class="page-tab" onclick="setPage('listechef')" id="tab-listechef">Liste Chef d&#39;équipe</button>
+      <button class="page-tab" onclick="setPage('liste')" id="tab-liste">Liste Présent</button>
+      <button class="page-tab" onclick="setPage('rapport')" id="tab-rapport">Rapport</button>
+      <button class="page-tab" onclick="setPage('recherche')" id="tab-recherche">Recherche</button>
+      <button class="page-tab" onclick="setPage('taches')" id="tab-taches">Liste des opérations</button>
+      <button class="page-tab" onclick="setPage('historique')" id="tab-historique">Historique</button>
+      <button class="page-tab" onclick="setPage('nonassignes')" id="tab-nonassignes">Non Assignés</button>
+    </div>
+
+    <!-- POINTAGE -->
+    <div id="page-pointage">
+      <div class="stats-row" id="stats"></div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#1a5c2a"></div>Présent</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Absent (ABS)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#d4930a"></div>يوم Repos (RPS)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#E24B4A;opacity:.5"></div>رقم غير مسجل</div>
+      </div>
+
+      <!-- Sidebar + Content layout -->
+      <div style="display:flex;gap:0;align-items:flex-start">
+        <!-- RIGHT SIDEBAR — Chef d&#39;équipe -->
+        <div style="min-width:160px;width:160px;flex-shrink:0;background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-left:16px">
+          <!-- Header -->
+          <div style="background:var(--green);padding:8px 10px;display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:11px;font-weight:700;color:#fff;letter-spacing:.5px;text-transform:uppercase">Chef d&#39;équipe</div>
+            
+          </div>
+          <!-- Arrow up -->
+          <button onclick="scrollChefs(-1)" id="arrow-up" style="width:100%;padding:5px;background:var(--green-light);border:none;border-bottom:1px solid var(--border);cursor:pointer;font-size:14px;color:var(--green);display:none">▲</button>
+          <!-- Scrollable list -->
+          <div id="chefs-nav" style="display:flex;flex-direction:column;gap:0;max-height:360px;overflow-y:auto;scroll-behavior:smooth;scrollbar-width:none" onscroll="updateArrows()"></div>
+          <!-- Arrow down -->
+          <button onclick="scrollChefs(1)" id="arrow-down" style="width:100%;padding:5px;background:var(--green-light);border:none;border-top:1px solid var(--border);cursor:pointer;font-size:14px;color:var(--green)">▼</button>
+          <!-- Add button -->
+          <div style="padding:8px">
+            <button onclick="openNewChef()" style="padding:7px 8px;border-radius:7px;font-size:11px;font-family:var(--font);cursor:pointer;border:1.5px dashed var(--green);color:var(--green);background:transparent;font-weight:600;width:100%;text-align:center">+ Chef d&#39;équipe</button>
+          </div>
+        </div>
+        <!-- MAIN CONTENT -->
+        <div style="flex:1;min-width:0">
+          <div id="content"></div>
+        </div>
+      </div>
+
+      <div id="transfer-modal" class="modal-wrap"><div class="modal">
+        <h3>Transférer un ouvrier</h3><div class="modal-info" id="tr-info"></div>
+        <div class="modal-lbl">Chef d&#39;équipe</div><select id="tr-chef"></select>
+        <div class="modal-lbl">Opération</div><select id="tr-task"></select>
+        <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('transfer-modal')">Annuler</button><button class="btn-add" onclick="confirmTransfer()">Confirmer</button></div>
+      </div></div>
+      <div id="edit-modal" class="modal-wrap"><div class="modal">
+        <h3>Modifier l&#39;ouvrier</h3>
+        <div class="modal-lbl">N° Pointage</div><input class="modal-input" type="text" id="edit-id">
+        <div class="modal-lbl">Nom</div><input class="modal-input" type="text" id="edit-name" readonly style="background:var(--surface2);color:var(--text3)">
+        <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('edit-modal')">Annuler</button><button class="btn-add" onclick="confirmEdit()">Enregistrer</button></div>
+      </div></div>
+      <div id="newchef-modal" class="modal-wrap"><div class="modal">
+        <h3>Ajouter un Chef d&#39;&eacute;quipe</h3>
+        <div class="modal-lbl">Nom complet</div><input class="modal-input" type="text" id="newchef-name" placeholder="Nom et Prénom">
+        <div class="modal-lbl">Op&eacute;rations</div><div class="task-checks" id="newchef-tasks"></div>
+        <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('newchef-modal')">Annuler</button><button class="btn-add" onclick="confirmNewChef()">+ Ajouter</button></div>
+      </div></div>
+      <div id="editchef-modal" class="modal-wrap"><div class="modal">
+        <h3>Modifier le Chef d&#39;&eacute;quipe</h3>
+        <div class="modal-lbl">Nom</div><input class="modal-input" type="text" id="editchef-name">
+        <div class="modal-lbl">Op&eacute;rations</div><div class="task-checks" id="editchef-tasks"></div>
+        <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('editchef-modal')">Annuler</button><button class="btn-add" onclick="confirmEditChef()">Enregistrer</button></div>
+      </div></div>
+      <div id="delchef-modal" class="modal-wrap"><div class="modal">
+        <h3>Supprimer le Chef</h3><div class="warn-box" id="delchef-warn"></div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Cette action est irréversible.</div>
+        <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('delchef-modal')">Annuler</button><button style="padding:6px 14px;font-size:13px;font-family:var(--font);background:transparent;border:0.5px solid var(--red-border);border-radius:7px;color:var(--red);cursor:pointer" onclick="confirmDelChef()">Supprimer</button></div>
+      </div></div>
+    </div>
+
+    <!-- LISTE PRESENT -->
+    <div id="page-liste" style="display:none">
+      <div id="add-employe-modal" class="modal-wrap"><div class="modal">
+        <h3 id="emp-modal-title">Ajouter un ouvrier</h3>
+        <div class="modal-lbl">N° CIN</div><input class="modal-input" type="text" id="emp-cin" placeholder="A123456">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><div class="modal-lbl">Nom</div><input class="modal-input" type="text" id="emp-nom" placeholder="Nom" style="margin-bottom:0"></div>
+          <div><div class="modal-lbl">Prénom</div><input class="modal-input" type="text" id="emp-prenom" placeholder="Prénom" style="margin-bottom:0"></div>
+        </div>
+        <div style="margin-bottom:10px"></div>
+        <div class="modal-lbl">N° Pointage</div><input class="modal-input" type="text" id="emp-pt" placeholder="F-001">
+        <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('add-employe-modal')">Annuler</button><button class="btn-add" onclick="confirmAddEmploye()">Enregistrer</button></div>
+      </div></div>
+
+      <!-- IMPORT EXCEL MODAL -->
+      <div id="import-modal" class="modal-wrap" style="min-height:400px"><div class="modal" style="width:420px;max-width:95vw">
+        <h3>استيراد من Excel</h3>
+        <div id="import-step1">
+          <div style="border:2px dashed var(--border2);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;margin-bottom:12px" onclick="document.getElementById('excel-file-input').click()">
+            <div style="font-size:28px;margin-bottom:8px">📂</div>
+            <div style="font-size:13px;font-weight:500;color:var(--text)">اضغط لاختيار ملف Excel</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">.xlsx أو .xls أو .csv</div>
+          </div>
+          <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleExcelFile(this)">
+        </div>
+        <div id="import-step2" style="display:none">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:8px" id="import-file-info"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+            <div>
+              <div class="modal-lbl">Colonne Nom</div>
+              <select class="modal-input" id="col-nom" style="margin-bottom:0"></select>
+            </div>
+            <div>
+              <div class="modal-lbl">Colonne Prénom</div>
+              <select class="modal-input" id="col-prenom" style="margin-bottom:0"><option value="">— Optionnel —</option></select>
+            </div>
+            <div>
+              <div class="modal-lbl">Colonne CIN</div>
+              <select class="modal-input" id="col-cin" style="margin-bottom:0"><option value="">— Optionnel —</option></select>
+            </div>
+            <div>
+              <div class="modal-lbl">Colonne Pointage</div>
+              <select class="modal-input" id="col-pt" style="margin-bottom:0"><option value="">— Optionnel —</option></select>
+            </div>
+          </div>
+          <div id="import-preview" style="background:var(--surface2);border-radius:var(--radius);padding:10px;font-size:12px;max-height:140px;overflow-y:auto;margin-bottom:12px;border:0.5px solid var(--border)"></div>
+          <div id="import-summary" style="font-size:12px;color:var(--green-text);background:var(--green-light);padding:8px 12px;border-radius:var(--radius);margin-bottom:4px"></div>
+        </div>
+        <div class="modal-btns">
+          <button class="btn-cancel" onclick="closeModal('import-modal');resetImport()">Annuler</button>
+          <button class="btn-add" id="import-confirm-btn" style="display:none" onclick="confirmImport()">Importer</button>
+        </div>
+      </div></div>
+
+      <div id="liste-content"></div>
+    </div>
+
+    <div id="page-rapport" style="display:none"><div id="rapport-content"></div></div>
+    <div id="page-recherche" style="display:none">
+      <div class="search-box">
+        <div class="search-row">
+          <input type="text" id="search-input" placeholder="Entrez N° Pointage ou nom..." onkeydown="if(event.key==='Enter')doSearch()">
+          <button onclick="doSearch()">Rechercher</button>
+        </div>
+        <div id="search-result"></div>
+      </div>
+    </div>
+    <div id="page-taches" style="display:none">
+      <div id="tasks-edit-modal" class="modal-wrap"><div class="modal">
+        <h3 id="task-modal-title">Modifier l&#39;op&eacute;ration</h3>
+        <div class="modal-lbl">Nom de l'opération</div><input class="modal-input" type="text" id="task-edit-name">
+        <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('tasks-edit-modal')">Annuler</button><button class="btn-add" onclick="confirmTaskEdit()">Enregistrer</button></div>
+      </div></div>
+      <div id="deltask-modal" class="modal-wrap"><div class="modal">
+        <h3>Supprimer l'op&eacute;ration</h3><div class="warn-box" id="deltask-warn"></div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Cette action est irréversible.</div>
+        <div class="modal-btns"><button class="btn-cancel" onclick="closeModal('deltask-modal')">Annuler</button><button style="padding:6px 14px;font-size:13px;font-family:var(--font);background:transparent;border:0.5px solid var(--red-border);border-radius:7px;color:var(--red);cursor:pointer" onclick="confirmDelTask()">Supprimer</button></div>
+      </div></div>
+      <div id="taches-content"></div>
+    </div>
+    <div id="page-historique" style="display:none"><div id="historique-content"></div></div>
+    <div id="page-nonassignes" style="display:none"><div id="nonassignes-content"></div></div>
+    <div id="page-listechef" style="display:none"><div id="listechef-content"></div></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,doc,getDoc,setDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const _fc={apiKey:"AIzaSyAO-lSX7LJemiW8uJLGqUCEjzYWQdJyJes",authDomain:"azura45.firebaseapp.com",projectId:"azura45",storageBucket:"azura45.firebasestorage.app",messagingSenderId:"909349444896",appId:"1:909349444896:web:46546410bff52b320e0b45"};
+const _app=initializeApp(_fc);
+const _db=getFirestore(_app);
+window._db=_db;
+window._fbReady=true;
+window.dispatchEvent(new Event('fbready'));
+</script>
+<script>
+const PASSWORD="azura45";
+// Show right panel on desktop
+if(window.innerWidth>=640)document.getElementById('login-right-panel').style.display='flex';
+let ALL_TASKS=[
+  {id:'t1',name:'الأرجل الكبيرة'},{id:'t2',name:'الأرجل الصغيرة'},
+  {id:'t3',name:'الورقة'},{id:'t4',name:'الجني'},
+  {id:'t5',name:'التعقيم'},{id:'t6',name:'عمليات أخرى'}
+];
+let CHEFS=[
+  {id:'c1',name:'Errattal Mourad',tasks:['t1','t2','t3','t4','t5','t6']},
+  {id:'c2',name:'Hbala Ilias',tasks:['t1','t2','t3','t4','t5','t6']},
+  {id:'c3',name:'Nfaoui Noureddin',tasks:['t1','t2','t3','t4','t5','t6']},
+  {id:'c4',name:'Errahmani Ahmed',tasks:['t1','t2','t3','t4','t5','t6']},
+  {id:'c5',name:'Dayfelah Redoian',tasks:['t1','t2','t3','t4','t5','t6']},
+  {id:'c6',name:'Aaffane Lahcen',tasks:['t1','t2','t3','t4','t5','t6']}
+];
+// Liste Présent — قاعدة بيانات العمال
+let EMPLOYES=[]; // [{cin, name, pointage}]
+let state={workers:{},nextId:1,nextTaskId:7};
+let activeChef='c1',openTasks=new Set(['t1']);
+let transferData=null,editData=null,editChefId=null,delChefId=null;
+let editTaskId=null,delTaskId=null,isNewTask=false,currentPage='pointage';
+let histArchive={},histViewDate=null;
+let editEmpIndex=null;
+let listeFilter='';
+let listeSearchType='all';
+let saveTimeout=null;
+
+const todayKey=new Date().toISOString().slice(0,10);
+const todayDisplay=new Date().toLocaleDateString('fr-MA',{day:'2-digit',month:'2-digit',year:'numeric'});
+document.getElementById('date-badge').textContent=new Date().toLocaleDateString('ar-MA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+// ===== HELPERS =====
+function getEmployeByPointage(pt){return EMPLOYES.find(e=>e.pointage===pt);}
+function isKnown(pt){return !!getEmployeByPointage(pt);}
+
+// ===== STORAGE (Firebase + localStorage fallback) =====
+async function loadState(){
+  // Try Firebase first
+  try{
+    if(window._db){
+      const {doc,getDoc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const snap=await getDoc(doc(window._db,'azura45','main'));
+      if(snap.exists()){
+        const s=snap.data();
+        if(s.tasks&&s.tasks.length)ALL_TASKS=s.tasks;
+        if(s.chefs&&s.chefs.length)CHEFS=s.chefs;
+        if(s.workers)state.workers=s.workers;
+        if(s.nextId)state.nextId=s.nextId;
+        if(s.nextTaskId)state.nextTaskId=s.nextTaskId;
+        if(s.employes)EMPLOYES=s.employes;
+      }
+      const snap2=await getDoc(doc(window._db,'azura45','archive'));
+      if(snap2.exists()&&snap2.data().data)histArchive=snap2.data().data;
+    }
+  }catch(e){
+    // Fallback to localStorage
+    try{const s=JSON.parse(localStorage.getItem('ferme_azura45')||'{}');
+      if(s.tasks&&s.tasks.length)ALL_TASKS=s.tasks;
+      if(s.chefs&&s.chefs.length)CHEFS=s.chefs;
+      if(s.workers)state.workers=s.workers;
+      if(s.nextId)state.nextId=s.nextId;
+      if(s.nextTaskId)state.nextTaskId=s.nextTaskId;
+      if(s.employes)EMPLOYES=s.employes;
+    }catch(e2){}
+    try{histArchive=JSON.parse(localStorage.getItem('ferme_azura45_archive')||'{}');}catch(e2){}
+  }
+  if(CHEFS.length)activeChef=CHEFS[0].id;
+}
+
+function saveState(){
+  clearTimeout(saveTimeout);
+  saveTimeout=setTimeout(async()=>{
+    const data={tasks:ALL_TASKS,chefs:CHEFS,workers:state.workers,nextId:state.nextId,nextTaskId:state.nextTaskId,employes:EMPLOYES,updatedAt:new Date().toISOString()};
+    // Save to localStorage always
+    localStorage.setItem('ferme_azura45',JSON.stringify(data));
+    // Save to Firebase
+    try{
+      if(window._db){
+        const {doc,setDoc}=await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        await setDoc(doc(window._db,'azura45','main'),data);
+      }
+    }catch(e){console.warn('Firebase save error',e);}
+    const el=document.getElementById('save-ind');el.style.display='block';
+    setTimeout(()=>el.style.display='none',1500);
+  },600);
+}
+
+// ===== LOGIN =====
+async function tryLogin(){
+  const pwd=document.getElementById('pwd-input').value;
+  if(pwd===PASSWORD){
+    document.getElementById('login-err').style.display='none';
+    // Load from localStorage first (always works)
+    try{
+      const s=JSON.parse(localStorage.getItem('ferme_azura45')||'{}');
+      if(s.tasks&&s.tasks.length)ALL_TASKS=s.tasks;
+      if(s.chefs&&s.chefs.length)CHEFS=s.chefs;
+      if(s.workers)state.workers=s.workers;
+      if(s.nextId)state.nextId=s.nextId;
+      if(s.nextTaskId)state.nextTaskId=s.nextTaskId;
+      if(s.employes)EMPLOYES=s.employes;
+    }catch(e){}
+    try{histArchive=JSON.parse(localStorage.getItem('ferme_azura45_archive')||'{}');}catch(e){}
+    // Try Firebase in background
+    try{await loadState();}catch(e){}
+    if(CHEFS.length)activeChef=CHEFS[0].id;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    render();
+  }else{
+    document.getElementById('login-err').style.display='block';
+    document.getElementById('pwd-input').value='';
+    document.getElementById('pwd-input').focus();
+  }
+}
+function logout(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('pwd-input').value='';
+}
+
+// ===== CORE =====
+function key(c,t){return c+'_'+t}
+function getW(c,t){return state.workers[key(c,t)]||[]}
+function setW(c,t,arr){state.workers[key(c,t)]=arr}
+function countByStatus(s){return Object.values(state.workers).reduce((a,arr)=>a+arr.filter(w=>w.status===s).length,0)}
+function totalW(){return Object.values(state.workers).reduce((s,a)=>s+a.length,0)}
+function chefTotal(cid){const c=CHEFS.find(x=>x.id===cid);if(!c)return 0;return(c.tasks||[]).reduce((s,t)=>s+getW(cid,t).length,0)}
+function getChefTasks(chef){return(chef.tasks||ALL_TASKS.map(t=>t.id)).map(tid=>ALL_TASKS.find(t=>t.id===tid)).filter(Boolean)}
+function statusBadge(s){
+  if(s==='abs')return '<span class="status-badge s-abs">Absent</span>';
+  if(s==='rps')return '<span class="status-badge s-rps">Repos</span>';
+  return '<span class="status-badge s-present">Présent</span>';
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');transferData=null;editData=null;}
+
+// ===== LANGUAGE =====
+let LANG='fr';
+const T={
+  ar:{
+    logout:'خروج',save:'Enregistré ✓',refresh:'تحديث',
+    present:'Présent',abs:'غائب',rps:'Repos',unknown:'غير مسجل',
+    addWorker:'+ Ajouter',search:'بحث',
+    chefTitle:'Chef d&#39;équipe',newChef:'+ رئيس جديد',
+    total:'Effectif total',presentStat:'Présents',absStat:'Absents (ABS)',rpsStat:'Repos (RPS)'
+  },
+  fr:{
+    logout:'Déconnexion',save:'Enregistré ✓',refresh:'Actualiser',
+    present:'Présent',abs:'Absent',rps:'Repos',unknown:'Non enregistré',
+    addWorker:'+ Ajouter',search:'Rechercher',
+    chefTitle:"Chefs",newChef:"+ Chef",
+    total:'Total employés',presentStat:'Présents',absStat:'Absents (ABS)',rpsStat:'Repos (RPS)'
+  }
+};
+function t(k){return T[LANG][k]||k;}
+function toggleLang(){return;//disabled
+
+  LANG=LANG==='ar'?'fr':'ar';
+  document.getElementById('lang-btn').textContent=LANG==='ar'?'🇲🇦 AR':'🇫🇷 FR';
+  document.documentElement.dir=LANG==='ar'?'rtl':'ltr';
+  document.getElementById('logout-btn').textContent=t('logout');
+  render();
+  if(currentPage==='rapport')renderRapport();
+  if(currentPage==='liste')renderListe();
+  if(currentPage==='listechef')renderListeChef();
+}
+
+// ===== REFRESH =====
+async function refreshData(){
+  const btn=document.querySelector('[title="Actualiser"]');
+  if(btn){btn.style.transform='rotate(360deg)';btn.style.transition='transform .5s';setTimeout(()=>{btn.style.transform='';btn.style.transition='';},500);}
+  await loadState();
+  render();
+  if(currentPage==='rapport')renderRapport();
+  if(currentPage==='liste')renderListe();
+  if(currentPage==='listechef')renderListeChef();
+  const si=document.getElementById('save-ind');
+  si.textContent=LANG==='ar'?'تم التحديث ✓':'Actualisé ✓';si.style.display='block';
+  setTimeout(()=>si.style.display='none',2000);
+}
+
+function setPage(p){
+  currentPage=p;
+  ['pointage','listechef','liste','rapport','recherche','taches','historique','nonassignes'].forEach(pg=>{
+    const el=document.getElementById('page-'+pg);
+    if(el)el.style.display=p===pg?'block':'none';
+  });
+  document.querySelectorAll('.page-tab').forEach(el=>{
+    const tab=el.id.replace('tab-','');
+    el.classList.toggle('active',tab===p);
+  });
+  if(p==='rapport')renderRapport();
+  if(p==='taches')renderTaches();
+  if(p==='historique')renderHistorique();
+  if(p==='liste')renderListe();
+  if(p==='listechef')renderListeChef();
+  if(p==='nonassignes')renderNonAssignes();
+  if(p==='recherche'){document.getElementById('search-input').value='';document.getElementById('search-result').innerHTML='';}
+}
+
+// ===== LISTE CHEF D'ÉQUIPE =====
+function renderListeChef(){
+  const el=document.getElementById('listechef-content');
+  let rows='';
+  CHEFS.forEach(function(c){
+    const total=chefTotal(c.id);
+    const cid=c.id;
+    rows+='<div style="display:grid;grid-template-columns:3fr 80px 110px;gap:0;padding:11px 15px;border-bottom:1px solid var(--border);align-items:center">'
+      +'<div style="font-size:13px;font-weight:600">'+c.name+'</div>'
+      +'<div><span style="background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:10px;font-weight:700;font-size:13px">'+total+'</span></div>'
+      +'<div style="display:flex;gap:5px">'
+      +'<button class="icon-btn icon-btn-edit" onclick="startEditChef(this.dataset.id)" data-id="'+cid+'">✏️</button>'
+      +'<button class="icon-btn icon-btn-del" onclick="startDelChef(this.dataset.id)" data-id="'+cid+'">🗑️</button>'
+      +'</div></div>';
+  });
+  if(!CHEFS.length) rows='<div style="text-align:center;padding:2rem;font-size:13px;color:var(--text3)">Aucun chef enregistré</div>';
+  el.innerHTML=
+    '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.25rem">'
+    +'<div style="font-size:15px;font-weight:700;color:var(--green)">Liste des Chefs</div>'
+    +'<button class="btn-add" onclick="openNewChef()">+ Ajouter Chef</button>'
+    +'</div>'
+    +'<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05)">'
+    +'<div style="display:grid;grid-template-columns:3fr 80px 110px;gap:0;padding:10px 15px;background:var(--green);font-size:11px;font-weight:700;color:#fff">'
+    +'<div>Chef d&#39;équipe</div><div>Ouvriers</div><div>Modifier / Supprimer</div>'
+    +'</div>'+rows+'</div>'
+    +'<div style="margin-top:1rem;font-size:12px;color:var(--text3);text-align:center">'+CHEFS.length+' chef(s) enregistré(s)</div>';
+}
+
+
+// ===== LISTE PRÉSENT =====
+
+function onListeSearch(val){
+  listeFilter=val;
+  // Save cursor position and focus state
+  const inp=document.getElementById('liste-search-input');
+  if(inp){window._listeSearchPos=inp.selectionStart;window._listeSearchFocused=true;}
+  const st=document.getElementById('search-type');
+  if(st)listeSearchType=st.value;
+  const q=listeFilter.toLowerCase();
+  const filtered=!q?EMPLOYES:EMPLOYES.filter(e=>{
+    const fullName=((e.nom||'')+' '+(e.prenom||'')).toLowerCase();
+    if(listeSearchType==='pointage') return e.pointage.toLowerCase().includes(q);
+    if(listeSearchType==='cin') return (e.cin||'').toLowerCase().includes(q);
+    if(listeSearchType==='nom') return fullName.includes(q)||(e.name||'').toLowerCase().includes(q);
+    return fullName.includes(q)||(e.name||'').toLowerCase().includes(q)||
+           e.pointage.toLowerCase().includes(q)||(e.cin||'').toLowerCase().includes(q);
+  });
+  // Update only the table wrap
+  const tableWrap=document.querySelector('#liste-content .liste-table-wrap');
+  if(!tableWrap){renderListe();return;}
+  if(filtered.length===0){
+    tableWrap.querySelector('div:last-child') && null;
+    const tbody=tableWrap.querySelector('.liste-tbody');
+    if(tbody) tbody.innerHTML='<div class="liste-empty">'+( listeFilter?'Aucun résultat':'Aucun ouvrier enregistré')+'</div>';
+    return;
+  }
+  renderListe();
+}
+function renderListe(){
+  const st=document.getElementById('search-type');
+  if(st)listeSearchType=st.value;
+  const q=listeFilter.toLowerCase();
+  const filtered=!q?EMPLOYES:EMPLOYES.filter(e=>{
+    const fullName=((e.nom||'')+' '+(e.prenom||'')).toLowerCase();
+    if(listeSearchType==='pointage') return e.pointage.toLowerCase().includes(q);
+    if(listeSearchType==='cin') return (e.cin||'').toLowerCase().includes(q);
+    if(listeSearchType==='nom') return fullName.includes(q)||(e.name||'').toLowerCase().includes(q);
+    // all
+    return fullName.includes(q)||(e.name||'').toLowerCase().includes(q)||
+           e.pointage.toLowerCase().includes(q)||(e.cin||'').toLowerCase().includes(q);
+  });
+
+  document.getElementById('liste-content').innerHTML=`
+    <div class="liste-header">
+      <div class="liste-title">Liste Présent — Ouvriers</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-add" style="background:var(--blue)" onclick="document.getElementById('import-modal').classList.add('open')">📂 Importer Excel</button>
+        <button class="btn-add" onclick="openAddEmploye()">+ Ajouter</button>
+        <button onclick="viderListe()" style="padding:6px 14px;border-radius:6px;font-size:12px;font-family:var(--font);cursor:pointer;border:1px solid var(--red-border);color:var(--red);background:transparent;font-weight:600">🗑️ Vider</button>
+      </div>
+    </div>
+    <div class="liste-stats">
+      <div class="liste-stat-chip">Total: <span>${EMPLOYES.length}</span></div>
+      <div class="liste-stat-chip">En activité: <span>${countActiveEmployes()}</span></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+      <select id="search-type" onchange="listeSearchType=this.value;onListeSearch(document.getElementById('liste-search-input')?document.getElementById('liste-search-input').value:listeFilter)" style="font-size:12px;font-family:var(--font);padding:7px 10px;border:1.5px solid var(--border2);border-radius:7px;background:var(--surface);color:var(--text);outline:none;cursor:pointer">
+        <option value="all">Tous les critères</option>
+        <option value="nom">Nom et Prénom</option>
+        <option value="pointage">N° Pointage</option>
+        <option value="cin">N° CIN</option>
+      </select>
+      <input type="text" id="liste-search-input" placeholder="Rechercher..." value="${listeFilter}" oninput="onListeSearch(this.value)" style="flex:1;min-width:150px;font-size:13px;font-family:var(--font);padding:7px 12px;border:1.5px solid var(--border2);border-radius:7px;background:var(--surface);color:var(--text);outline:none">
+    </div>
+    <div class="liste-table-wrap">
+      <div class="liste-table-head" style="grid-template-columns:1fr 1fr 1fr 1fr 80px">
+        <div class="col-cin">CIN</div>
+        <div>Nom</div>
+        <div>Prénom</div>
+        <div>N° Pointage</div>
+        <div></div>
+      </div>
+      ${filtered.length===0?`<div class="liste-empty">${listeFilter?'Aucun résultat':'Aucun ouvrier enregistré'}</div>`:
+        filtered.map((e,i)=>{
+          const realIdx=EMPLOYES.indexOf(e);
+          const active=countActiveForEmploye(e.pointage);
+          const nom=e.nom||(e.name||'').split(' ')[0]||'';
+          const prenom=e.prenom||(e.name||'').split(' ').slice(1).join(' ')||'';
+          const activeBadge=active>0?'<span style="font-size:10px;background:var(--green-light);color:var(--green);padding:1px 5px;border-radius:8px;margin-right:4px;font-weight:700">'+active+'</span>':'';
+          return '<div class="liste-row" style="grid-template-columns:1fr 1fr 1fr 1fr 80px">'+
+            '<div class="liste-cell mono col-cin" title="'+(e.cin||'')+'">'+( e.cin||'—')+'</div>'+
+            '<div class="liste-cell" style="font-weight:600">'+nom+'</div>'+
+            '<div class="liste-cell">'+prenom+'</div>'+
+            '<div class="liste-cell pt">'+e.pointage+activeBadge+'</div>'+
+            '<div class="liste-actions">'+
+              '<button class="icon-btn icon-btn-edit" title="Modifier" onclick="openEditEmploye('+realIdx+')">✏️</button>'+
+              '<button class="icon-btn icon-btn-del" title="Supprimer" onclick="deleteEmploye('+realIdx+')">🗑️</button>'+
+            '</div></div>';
+        }).join('')
+      }
+    </div>`;
+  // Restore focus and cursor position after re-render
+  const newInp=document.getElementById('liste-search-input');
+  if(newInp && document.activeElement && document.activeElement.id==='liste-search-input'){
+    const savedPos=window._listeSearchPos||0;
+    newInp.focus();
+    try{newInp.setSelectionRange(savedPos,savedPos);}catch(e){}
+  } else if(newInp && window._listeSearchFocused){
+    const savedPos=window._listeSearchPos||newInp.value.length;
+    newInp.focus();
+    try{newInp.setSelectionRange(savedPos,savedPos);}catch(e){}
+    window._listeSearchFocused=false;
+  }
+  const st2=document.getElementById('search-type');
+  if(st2&&listeSearchType)st2.value=listeSearchType;
+}
+
+function countActiveEmployes(){
+  const pts=new Set();
+  Object.values(state.workers).forEach(arr=>arr.forEach(w=>pts.add(w.id)));
+  return EMPLOYES.filter(e=>pts.has(e.pointage)).length;
+}
+function countActiveForEmploye(pt){
+  let count=0;
+  CHEFS.forEach(chef=>{getChefTasks(chef).forEach(task=>{if(getW(chef.id,task.id).find(w=>w.id===pt))count++;});});
+  return count;
+}
+
+function openAddEmploye(){
+  editEmpIndex=null;
+  document.getElementById('emp-modal-title').textContent='Ajouter un employé';
+  document.getElementById('emp-cin').value='';
+  document.getElementById('emp-nom').value='';
+  document.getElementById('emp-prenom').value='';
+  document.getElementById('emp-pt').value='F-'+String(state.nextId).padStart(3,'0');
+  document.getElementById('add-employe-modal').classList.add('open');
+}
+function openEditEmploye(idx){
+  editEmpIndex=idx;
+  const e=EMPLOYES[idx];
+  document.getElementById('emp-modal-title').textContent=LANG==='ar'?'تعديل بيانات الouvrier':'Modifier l\'employé';
+  document.getElementById('emp-cin').value=e.cin||'';
+  const parts=(e.name||'').split(' ');
+  document.getElementById('emp-nom').value=parts[0]||'';
+  document.getElementById('emp-prenom').value=parts.slice(1).join(' ')||'';
+  document.getElementById('emp-pt').value=e.pointage;
+  document.getElementById('add-employe-modal').classList.add('open');
+}
+function confirmAddEmploye(){
+  const cin=document.getElementById('emp-cin').value.trim();
+  const nom=document.getElementById('emp-nom').value.trim();
+  const prenom=document.getElementById('emp-prenom').value.trim();
+  const name=(nom+' '+prenom).trim();
+  const pt=document.getElementById('emp-pt').value.trim();
+  if(!name||!pt)return;
+  if(editEmpIndex===null){
+    EMPLOYES.push({cin,name,nom,prenom,pointage:pt});
+    state.nextId++;
+  }else{
+    const old=EMPLOYES[editEmpIndex];
+    // Update pointage in workers if changed
+    if(old.pointage!==pt){
+      Object.keys(state.workers).forEach(k=>{
+        state.workers[k]=state.workers[k].map(w=>w.id===old.pointage?{...w,id:pt}:w);
+      });
+    }
+    EMPLOYES[editEmpIndex]={cin,name,nom,prenom,pointage:pt};
+  }
+  closeModal('add-employe-modal');
+  saveState();
+  renderListe();
+  if(currentPage==='listechef')renderListeChef();
+  renderContent();
+}
+function deleteEmploye(idx){
+  const e=EMPLOYES[idx];
+  if(!confirm(`Vous allez supprimer "${e.name}" من القائمة. واش متأكد؟`))return;
+  EMPLOYES.splice(idx,1);
+  saveState();
+  renderListe();
+  renderContent();
+}
+
+// ===== POINTAGE INPUT LOOKUP =====
+function onPointageInput(tid){
+  const input=document.getElementById('wi_'+tid);
+  const preview=document.getElementById('wp_'+tid);
+  const val=input.value.trim();
+  if(!val){preview.style.display='none';return;}
+
+  // Check if already assigned somewhere
+  let dupLocation=null;
+  CHEFS.forEach(chef=>{
+    getChefTasks(chef).forEach(task=>{
+      if(getW(chef.id,task.id).find(w=>w.id===val)){
+        dupLocation={chefName:chef.name,taskName:task.name};
+      }
+    });
+  });
+
+  if(dupLocation){
+    preview.textContent=`⚠ موجود عند ${dupLocation.chefName} — ${dupLocation.taskName}`;
+    preview.className='name-preview duplicate';preview.style.display='block';return;
+  }
+
+  const emp=getEmployeByPointage(val);
+  preview.style.display='block';
+  if(emp){
+    preview.textContent='✓ '+emp.name;
+    preview.className='name-preview';
+  }else{
+    preview.textContent='Non enregistré dans Liste';
+    preview.className='name-preview unknown';
+  }
+}
+
+// ===== STATS & RENDER =====
+function renderStats(){
+  const present=totalW()-countByStatus('abs')-countByStatus('rps');
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-l">Effectif total</div><div class="stat-v">${totalW()}</div></div>
+    <div class="stat"><div class="stat-l">Présents</div><div class="stat-v" style="color:#27500A">${present}</div></div>
+    <div class="stat"><div class="stat-l">Absents (ABS)</div><div class="stat-v" style="color:#A32D2D">${countByStatus('abs')}</div></div>
+    <div class="stat"><div class="stat-l">Repos (RPS)</div><div class="stat-v" style="color:#854F0B">${countByStatus('rps')}</div></div>`;
+}
+function scrollChefs(dir){
+  const nav=document.getElementById('chefs-nav');
+  if(nav)nav.scrollBy({top:dir*120,behavior:'smooth'});
+  setTimeout(updateArrows,200);
+}
+function updateArrows(){
+  const nav=document.getElementById('chefs-nav');
+  const up=document.getElementById('arrow-up');
+  const dn=document.getElementById('arrow-down');
+  if(!nav||!up||!dn)return;
+  up.style.display=nav.scrollTop>5?'block':'none';
+  dn.style.display=nav.scrollTop+nav.clientHeight<nav.scrollHeight-5?'block':'none';
+}
+
+function renderChefsNav(){
+  const nav=document.getElementById('chefs-nav');
+  nav.innerHTML=
+    CHEFS.map(c=>{
+      const active=c.id===activeChef;
+      return`<div onclick="setChef('${c.id}')" style="border-bottom:1px solid var(--border);padding:10px 12px;font-size:12px;font-family:var(--font);cursor:pointer;color:${active?'#fff':'var(--text)'};background:${active?'var(--green)':'transparent'};font-weight:600;text-align:right;width:100%;display:block;box-sizing:border-box;line-height:1.5;white-space:normal;word-break:break-word;transition:background .15s" onmouseover="if('${c.id}'!==activeChef)this.style.background='var(--green-light)'" onmouseout="if('${c.id}'!==activeChef)this.style.background='transparent'">${c.name}</div>`;
+    }).join('')+
+    `<div style="padding:8px"><button onclick="openNewChef()" style="padding:7px 8px;border-radius:7px;font-size:11px;font-family:var(--font);cursor:pointer;border:1.5px dashed var(--green);color:var(--green);background:transparent;font-weight:600;width:100%;text-align:center">+ Nouveau</button></div>`;
+  setTimeout(updateArrows,100);
+}
+function renderContent(){
+  const chef=CHEFS.find(c=>c.id===activeChef);
+  if(!chef){document.getElementById('content').innerHTML='';return;}
+  const tasks=getChefTasks(chef);
+  let html=`<div style="font-size:14px;font-weight:600;margin-bottom:1rem">${chef.name} <span style="font-size:12px;color:var(--text3);font-weight:400">— ${chefTotal(activeChef)} ouvriers</span></div>`;
+  if(!tasks.length){html+='<div style="font-size:13px;color:var(--text3)">لا توجد مهام.</div>';document.getElementById('content').innerHTML=html;return;}
+  html+=tasks.map(task=>{
+    const workers=getW(activeChef,task.id);
+    const isOpen=openTasks.has(task.id);
+    const absC=workers.filter(w=>w.status==='abs').length;
+    const rpsC=workers.filter(w=>w.status==='rps').length;
+    const presC=workers.length-absC-rpsC;
+    return`<div class="chef-card">
+      <div class="chef-head" onclick="toggleTask('${task.id}')">
+        <div style="flex:1"><div class="task-name-txt">${task.name}</div>
+        <div class="task-sub">${presC} Présent${absC>0?` · <span style="color:#A32D2D">${absC} ABS</span>`:''}${rpsC>0?` · <span style="color:#854F0B">${rpsC} RPS</span>`:''}</div></div>
+        <div class="task-badge">${workers.length}</div>
+        <div class="chev">${isOpen?'▲':'▼'}</div>
+      </div>
+      <div class="chef-body ${isOpen?'open':''}"><div class="task-section">
+        ${workers.length===0?'<div class="empty">لا يوجد عمال</div>':
+          workers.map(w=>{
+            const emp=getEmployeByPointage(w.id);
+            const known=!!emp;
+            const displayName=emp?emp.name:w.name;
+            return`<div class="worker-row">
+              <div class="wid ${known?'':'unknown'}" title="${known?'':'هذا الرقم غير مسجل في Liste Présent'}">${w.id}</div>
+              <div class="wname">${displayName}${!known?` <span style="font-size:10px;color:var(--red)">⚠ Non enregistré</span>`:''}</div>
+              ${statusBadge(w.status||'present')}
+              <button class="btn-xs btn-abs ${w.status==='abs'?'on':''}" onclick="setStatus('${activeChef}','${task.id}','${w.id}','abs')">ABS</button>
+              <button class="btn-xs btn-rps ${w.status==='rps'?'on':''}" onclick="setStatus('${activeChef}','${task.id}','${w.id}','rps')">RPS</button>
+              <button class="w-icon-btn w-btn-tr" title="تحويل" onclick="startTransfer('${activeChef}','${task.id}','${w.id}')">↔️</button>
+              <button class="w-icon-btn w-btn-del" title="حذف" onclick="removeWorker('${activeChef}','${task.id}','${w.id}')">🗑️</button>
+            </div>`;
+          }).join('')}
+        <div class="add-row">
+          <input type="text" id="wi_${task.id}" placeholder="N° Pointage" style="max-width:120px" oninput="onPointageInput('${task.id}')">
+          <span class="name-preview" id="wp_${task.id}"></span>
+          <button class="btn-add" onclick="addWorker('${activeChef}','${task.id}')">+ Ajouter</button>
+        </div>
+      </div></div></div>`;
+  }).join('');
+  document.getElementById('content').innerHTML=html;
+}
+function render(){renderStats();renderChefsNav();renderContent();}
+function setChef(id){activeChef=id;render();}
+function toggleTask(tid){if(openTasks.has(tid))openTasks.delete(tid);else openTasks.add(tid);renderContent();}
+function setStatus(cid,tid,wid,s){
+  const workers=getW(cid,tid);const w=workers.find(x=>x.id===wid);if(!w)return;
+  w.status=w.status===s?'present':s;setW(cid,tid,workers);saveState();openTasks.add(tid);render();
+}
+function addWorker(cid,tid){
+  const idEl=document.getElementById('wi_'+tid);
+  const pt=idEl.value.trim();if(!pt)return;
+
+  // Check duplicate across ALL chefs and tasks
+  let dupLocation=null;
+  CHEFS.forEach(chef=>{
+    getChefTasks(chef).forEach(task=>{
+      if(getW(chef.id,task.id).find(w=>w.id===pt)){
+        dupLocation={chefName:chef.name,taskName:task.name,sameChef:chef.id===cid};
+      }
+    });
+  });
+
+  if(dupLocation){
+    const preview=document.getElementById('wp_'+tid);
+    if(preview){
+      preview.textContent=dupLocation.sameChef
+        ? `⚠ موجود في ${dupLocation.taskName}`
+        : `⚠ موجود عند ${dupLocation.chefName} — ${dupLocation.taskName}`;
+      preview.className='name-preview duplicate';preview.style.display='block';
+    }
+    // Show warning below add row
+    const warnId='dup_warn_'+tid;
+    let warn=document.getElementById(warnId);
+    if(!warn){
+      warn=document.createElement('div');warn.id=warnId;
+      warn.style.cssText='display:flex;align-items:center;gap:8px;background:#fef3dc;border:1px solid #d4930a;border-radius:10px;padding:8px 12px;margin-top:8px;font-size:12px;color:#a06d00;animation:none';
+      idEl.parentElement.parentElement.appendChild(warn);
+    }
+    warn.innerHTML=dupLocation.sameChef
+      ? `⚠️ هذا الouvrier موجود بالفعل في مهمة <strong>${dupLocation.taskName}</strong>`
+      : `⚠️ هذا الouvrier مسجل عند <strong>${dupLocation.chefName}</strong> في مهمة <strong>${dupLocation.taskName}</strong> — لا يمكن إضافته مرة ثانية`;
+    setTimeout(()=>{if(warn)warn.remove();},4000);
+    return;
+  }
+
+  const emp=getEmployeByPointage(pt);
+  const name=emp?emp.name:'Employé non enregistré';
+  const workers=getW(cid,tid);
+  workers.push({id:pt,name,status:'present'});
+  setW(cid,tid,workers);
+  idEl.value='';
+  const preview=document.getElementById('wp_'+tid);
+  if(preview)preview.style.display='none';
+  saveState();openTasks.add(tid);render();
+}
+function removeWorker(cid,tid,wid){setW(cid,tid,getW(cid,tid).filter(w=>w.id!==wid));saveState();openTasks.add(tid);render();}
+function startEdit(cid,tid,wid){
+  const w=getW(cid,tid).find(x=>x.id===wid);
+  editData={chefId:cid,taskId:tid,workerId:wid};
+  document.getElementById('edit-id').value=w.id;
+  const emp=getEmployeByPointage(w.id);
+  document.getElementById('edit-name').value=emp?emp.name:w.name;
+  document.getElementById('edit-modal').classList.add('open');
+}
+function confirmEdit(){
+  const ni=document.getElementById('edit-id').value.trim();if(!ni)return;
+  const{chefId,taskId,workerId}=editData;
+  const workers=getW(chefId,taskId);const w=workers.find(x=>x.id===workerId);if(!w)return;
+  const emp=getEmployeByPointage(ni);
+  w.id=ni;w.name=emp?emp.name:w.name;
+  setW(chefId,taskId,workers);closeModal('edit-modal');saveState();openTasks.add(taskId);render();
+}
+function startTransfer(cid,tid,wid){
+  const w=getW(cid,tid).find(x=>x.id===wid);
+  transferData={chefId:cid,taskId:tid,workerId:wid};
+  document.getElementById('tr-info').textContent=`${w.id} — ${w.name}`;
+  document.getElementById('tr-chef').innerHTML=CHEFS.map(c=>`<option value="${c.id}" ${c.id===cid?'selected':''}>${c.name}</option>`).join('');
+  document.getElementById('tr-task').innerHTML=ALL_TASKS.map(t=>`<option value="${t.id}" ${t.id===tid?'selected':''}>${t.name}</option>`).join('');
+  document.getElementById('transfer-modal').classList.add('open');
+}
+function confirmTransfer(){
+  const{chefId,taskId,workerId}=transferData;
+  const tc=document.getElementById('tr-chef').value;const tt=document.getElementById('tr-task').value;
+  if(tc===chefId&&tt===taskId){closeModal('transfer-modal');return;}
+  const w=getW(chefId,taskId).find(x=>x.id===workerId);
+  setW(chefId,taskId,getW(chefId,taskId).filter(x=>x.id!==workerId));
+  const dest=getW(tc,tt);dest.push(w);setW(tc,tt,dest);
+  closeModal('transfer-modal');saveState();render();
+}
+function taskChecksHTML(sel){return ALL_TASKS.map(t=>`<label class="task-check"><input type="checkbox" value="${t.id}" ${sel.includes(t.id)?'checked':''}>${t.name}</label>`).join('');}
+
+function taskChecksHtmlFr(sel){
+  const toggleBtn=`<button type="button" onclick="toggleSelectAll(this)" data-state="all" style="font-size:11px;padding:4px 12px;border-radius:5px;border:1px solid var(--green);color:var(--green);background:transparent;cursor:pointer;font-family:var(--font);margin-bottom:8px;display:block">✅ Sélectionner / Désélectionner tout</button>`;
+  const items=ALL_TASKS.map(t=>`<label class="task-check"><input type="checkbox" value="${t.id}" ${sel.includes(t.id)?'checked':''}>${t.name}</label>`).join('');
+  return toggleBtn+items;
+}
+
+function toggleSelectAll(btn){
+  const state=btn.dataset.state==='all';
+  const containers=['newchef-tasks','editchef-tasks'];
+  containers.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.closest('.modal-wrap.open')){
+      el.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=!state);
+    }
+  });
+  btn.dataset.state=state?'none':'all';
+}
+function selectAllTasks(checked){
+  // Find which modal is open
+  const containers=['newchef-tasks','editchef-tasks'];
+  containers.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.closest('.modal-wrap.open')){
+      el.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=checked);
+    }
+  });
+}
+function getChecked(cid){return Array.from(document.querySelectorAll(`#${cid} input[type=checkbox]:checked`)).map(el=>el.value);}
+function openNewChef(){
+  document.getElementById('newchef-name').value='';
+  document.getElementById('newchef-tasks').innerHTML=taskChecksHtmlFr(ALL_TASKS.map(t=>t.id));
+  document.getElementById('newchef-modal').classList.add('open');
+}
+function confirmNewChef(){const name=document.getElementById('newchef-name').value.trim();if(!name)return;const tasks=getChecked('newchef-tasks');const id='c'+Date.now();CHEFS.push({id,name,tasks});activeChef=id;closeModal('newchef-modal');saveState();render();}
+function startEditChef(cid){
+  const c=CHEFS.find(x=>x.id===cid);editChefId=cid;
+  document.getElementById('editchef-name').value=c.name;
+  document.getElementById('editchef-tasks').innerHTML=taskChecksHtmlFr(c.tasks||ALL_TASKS.map(t=>t.id));
+  document.getElementById('editchef-modal').classList.add('open');
+}
+function confirmEditChef(){const name=document.getElementById('editchef-name').value.trim();if(!name)return;const tasks=getChecked('editchef-tasks');const c=CHEFS.find(x=>x.id===editChefId);c.name=name;c.tasks=tasks;closeModal('editchef-modal');saveState();render();}
+function startDelChef(cid){delChefId=cid;const c=CHEFS.find(x=>x.id===cid);document.getElementById('delchef-warn').textContent=`Vous allez supprimer "${c.name}" et tous ses ouvriers. Êtes-vous sûr ?`;document.getElementById('delchef-modal').classList.add('open');}
+function confirmDelChef(){CHEFS=CHEFS.filter(c=>c.id!==delChefId);ALL_TASKS.forEach(t=>{delete state.workers[key(delChefId,t.id)];});if(activeChef===delChefId)activeChef=CHEFS.length?CHEFS[0].id:'';closeModal('delchef-modal');saveState();render();}
+function openNewTask(){isNewTask=true;editTaskId=null;document.getElementById('task-modal-title').textContent='Nouvelle operation';document.getElementById('task-edit-name').value='';document.getElementById('tasks-edit-modal').classList.add('open');}
+function openEditTask(tid){isNewTask=false;editTaskId=tid;const t=ALL_TASKS.find(x=>x.id===tid);document.getElementById('task-modal-title').textContent='Modifier operation';document.getElementById('task-edit-name').value=t.name;document.getElementById('tasks-edit-modal').classList.add('open');}
+function confirmTaskEdit(){const name=document.getElementById('task-edit-name').value.trim();if(!name)return;if(isNewTask){const id='t'+state.nextTaskId++;ALL_TASKS.push({id,name});CHEFS.forEach(c=>{if(!c.tasks)c.tasks=ALL_TASKS.map(t=>t.id);else c.tasks.push(id);});}else{const t=ALL_TASKS.find(x=>x.id===editTaskId);t.name=name;}closeModal('tasks-edit-modal');saveState();renderTaches();render();}
+function openDelTask(tid){delTaskId=tid;const t=ALL_TASKS.find(x=>x.id===tid);document.getElementById('deltask-warn').textContent=`Vous allez supprimer "${t.name}" et tous ses employes. Etes-vous sur ?`;document.getElementById('deltask-modal').classList.add('open');}
+function confirmDelTask(){ALL_TASKS=ALL_TASKS.filter(t=>t.id!==delTaskId);CHEFS.forEach(c=>{c.tasks=(c.tasks||[]).filter(tid=>tid!==delTaskId);});Object.keys(state.workers).forEach(k=>{if(k.endsWith('_'+delTaskId))delete state.workers[k];});closeModal('deltask-modal');saveState();renderTaches();render();}
+function renderTaches(){document.getElementById('taches-content').innerHTML=`<div class="tasks-mgmt"><div class="tasks-mgmt-header"><div class="tasks-mgmt-title">Liste des opérations</div><button class="btn-add" onclick="openNewTask()">+ Nouvelle opération</button></div>${ALL_TASKS.map(t=>`<div class="task-mgmt-row"><div class="task-mgmt-name">${t.name}</div><div style="display:flex;gap:5px"><button class="icon-btn icon-btn-edit" onclick="openEditTask('${t.id}')">✏️</button><button class="icon-btn icon-btn-del" onclick="openDelTask('${t.id}')">🗑️</button></div></div>`).join('')}</div>`;}
+
+// ===== RAPPORT =====
+function renderRapport(){
+  const absList=[],rpsList=[];
+  const chefStats=CHEFS.map(chef=>{let total=0,present=0,abs=0,rps=0;getChefTasks(chef).forEach(task=>{getW(chef.id,task.id).forEach(w=>{total++;if(w.status==='abs')abs++;else if(w.status==='rps')rps++;else present++;});});return{name:chef.name,total,present,abs,rps};});
+  CHEFS.forEach(chef=>{getChefTasks(chef).forEach(task=>{getW(chef.id,task.id).forEach(w=>{if(w.status==='abs')absList.push({...w,chefName:chef.name,taskName:task.name});if(w.status==='rps')rpsList.push({...w,chefName:chef.name,taskName:task.name});});});});
+  function makeRows(list){if(!list.length)return'<div class="empty-report">لا يوجد سجلات</div>';return'<div class="report-card">'+list.map(w=>{const emp=getEmployeByPointage(w.id);return`<div class="report-row"><div class="r-id">${w.id}</div><div class="r-name">${emp?emp.name:w.name}</div><div class="r-task">${w.taskName}</div><div class="r-chef">${w.chefName}</div></div>`}).join('')+'</div>';}
+  const totalAll=chefStats.reduce((s,c)=>s+c.total,0);const presentAll=chefStats.reduce((s,c)=>s+c.present,0);
+  document.getElementById('rapport-content').innerHTML=`
+    <div class="rapport-topbar"><div><div class="rapport-topbar-title">Rapport du ${todayDisplay}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">POINTAGE PHYSIQUE — AZURA 45</div></div><button class="btn-excel" onclick="exportExcel()">⬇ تحميل Excel</button></div>
+    <div class="rapport-section"><div class="rapport-section-title">Récapitulatif — Chefs</div>
+    <div style="background:var(--surface2);border-radius:var(--radius);padding:10px 16px;display:flex;gap:20px;flex-wrap:wrap;margin-bottom:14px;align-items:center;border:0.5px solid var(--border)"><div style="font-size:12px;color:var(--text3)">Total général</div><div style="display:flex;gap:16px;flex-wrap:wrap"><span style="font-size:13px;font-weight:600;color:#27500A">${presentAll} حاضر</span><span style="font-size:13px;font-weight:600;color:#A32D2D">${absList.length} ABS</span><span style="font-size:13px;font-weight:600;color:#854F0B">${rpsList.length} RPS</span><span style="font-size:13px;font-weight:600">${totalAll} total</span></div></div>
+    <div class="chef-summary-grid">${chefStats.map(c=>`<div class="chef-summary-card"><div class="cscard-name">${c.name}</div><div class="cscard-total"><div class="cscard-total-l">إجمالي</div><div class="cscard-total-v">${c.total}</div></div><div class="cscard-stats"><div class="cscard-stat"><div class="cscard-stat-v" style="color:#27500A">${c.present}</div><div class="cscard-stat-l">Présent</div></div><div class="cscard-stat"><div class="cscard-stat-v" style="color:#A32D2D">${c.abs}</div><div class="cscard-stat-l">ABS</div></div><div class="cscard-stat"><div class="cscard-stat-v" style="color:#854F0B">${c.rps}</div><div class="cscard-stat-l">RPS</div></div></div></div>`).join('')}</div></div>
+    <div class="rapport-section"><div class="rapport-section-title" style="color:#A32D2D">Absents (ABS) — ${absList.length} ouvrier</div>${makeRows(absList)}</div>
+    <div class="rapport-section"><div class="rapport-section-title" style="color:#854F0B">يوم Repos (RPS) — ${rpsList.length} ouvrier</div>${makeRows(rpsList)}</div>`;
+}
+
+// ===== RECHERCHE =====
+function doSearch(){
+  const q=document.getElementById('search-input').value.trim().toLowerCase();const el=document.getElementById('search-result');
+  if(!q){el.innerHTML='';return;}
+  let found=null;
+  outer:for(const chef of CHEFS){for(const task of getChefTasks(chef)){for(const w of getW(chef.id,task.id)){if(w.id.toLowerCase()===q||w.name.toLowerCase().includes(q)){found={w,chef,task};break outer;}}}}
+  // Also search in EMPLOYES
+  if(!found){const emp=EMPLOYES.find(e=>e.pointage.toLowerCase()===q||e.name.toLowerCase().includes(q)||(e.nom||'').toLowerCase().includes(q)||(e.prenom||'').toLowerCase().includes(q)||e.cin.toLowerCase()===q);if(emp){el.innerHTML=`<div class="result-card"><div class="result-field"><div class="result-label">N° Pointage</div><div class="result-value" style="font-family:var(--mono)">${emp.pointage}</div></div><div class="result-divider"></div><div class="result-field"><div class="result-label">Nom</div><div class="result-value">${emp.name}</div></div><div class="result-divider"></div><div class="result-field"><div class="result-label">رقم CIN</div><div class="result-value">${emp.cin||'—'}</div></div><div class="result-divider"></div><div class="result-field"><div class="result-label">الحالة</div><div class="result-value" style="color:var(--text3)">غير مكلف حاليا</div></div></div>`;return;}}
+  if(!found){el.innerHTML=`<div class="result-not-found">Ouvrier introuvable</div>`;return;}
+  const{w,chef,task}=found;const emp=getEmployeByPointage(w.id);
+  const sLabel=w.status==='abs'?'Absent (ABS)':w.status==='rps'?'يوم Repos (RPS)':'Présent';
+  const sColor=w.status==='abs'?'#A32D2D':w.status==='rps'?'#854F0B':'#27500A';
+  el.innerHTML=`<div class="result-card"><div class="result-field"><div class="result-label">N° Pointage</div><div class="result-value" style="font-family:var(--mono);font-size:16px">${w.id}</div></div><div class="result-divider"></div><div class="result-field"><div class="result-label">Nom</div><div class="result-value">${emp?emp.name:w.name}</div></div>${emp&&emp.cin?`<div class="result-divider"></div><div class="result-field"><div class="result-label">رقم CIN</div><div class="result-value">${emp.cin}</div></div>`:''}<div class="result-divider"></div><div class="result-field"><div class="result-label">Chef d&#39;équipe</div><div class="result-value" style="color:var(--blue)">${chef.name}</div></div><div class="result-divider"></div><div class="result-field"><div class="result-label">Opération</div><div class="result-value">${task.name}</div></div><div class="result-divider"></div><div class="result-field"><div class="result-label">الحالة</div><div class="result-value" style="color:${sColor}">${sLabel}</div></div></div>`;
+}
+
+// ===== HISTORIQUE =====
+function saveDaySnapshot(){
+  histArchive[todayKey]={date:todayKey,tasks:JSON.parse(JSON.stringify(ALL_TASKS)),chefs:JSON.parse(JSON.stringify(CHEFS)),workers:JSON.parse(JSON.stringify(state.workers)),employes:JSON.parse(JSON.stringify(EMPLOYES))};
+  localStorage.setItem('ferme_azura45_archive',JSON.stringify(histArchive));
+  if(window._db){import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(({doc,setDoc})=>{setDoc(doc(window._db,'azura45','archive'),{data:histArchive,updatedAt:new Date().toISOString()}).catch(e=>console.warn(e));});}
+  const el=document.getElementById('save-ind');el.textContent='Journée archivée ✓';el.style.display='block';setTimeout(()=>{el.textContent='Enregistré ✓';el.style.display='none';},2500);
+  if(currentPage==='historique')renderHistorique();
+}
+function formatDateDisplay(iso){const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
+function loadHistDay(d){histViewDate=d;renderHistorique();}
+function loadHistFromInput(){const v=document.getElementById('hist-date-input').value;if(v){histViewDate=v;renderHistorique();}}
+function renderHistorique(){
+  const days=Object.keys(histArchive).sort().reverse();
+  const el=document.getElementById('historique-content');
+  let topbar=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.5rem"><div style="font-size:15px;font-weight:600">Historique</div><button class="btn-save-day" onclick="saveDaySnapshot()">💾 Sauvegarder la journée (${todayDisplay})</button></div>`;
+  if(!days.length){el.innerHTML=topbar+`<div class="hist-empty">لا يوجد أيام محفوظة بعد.</div>`;return;}
+  let chips=`<div style="font-size:12px;color:var(--text3);margin-bottom:8px">Jours archivés</div><div class="hist-days-list">${days.map(d=>`<div class="hist-day-chip ${histViewDate===d?'active':''}" onclick="loadHistDay('${d}')">${formatDateDisplay(d)}</div>`).join('')}</div>`;
+  let searchBar=`<div class="hist-search"><input type="date" id="hist-date-input" value="${histViewDate||''}"><button class="btn-add" onclick="loadHistFromInput()">عرض</button></div>`;
+  let body=histViewDate&&histArchive[histViewDate]?renderHistSnapshot(histArchive[histViewDate]):histViewDate?`<div class="hist-empty">لا يوجد بيانات ليوم ${formatDateDisplay(histViewDate)}</div>`:'';
+  el.innerHTML=topbar+chips+searchBar+body;
+}
+function renderHistSnapshot(snap){
+  const tasks=snap.tasks||[];const chefs=snap.chefs||[];const workers=snap.workers||{};const emps=snap.employes||[];
+  function gw(c,t){return workers[c+'_'+t]||[]}
+  function gct(chef){return(chef.tasks||tasks.map(t=>t.id)).map(tid=>tasks.find(t=>t.id===tid)).filter(Boolean)}
+  function getEmp(pt){return emps.find(e=>e.pointage===pt);}
+  const chefStats=chefs.map(chef=>{let total=0,present=0,abs=0,rps=0;gct(chef).forEach(task=>{gw(chef.id,task.id).forEach(w=>{total++;if(w.status==='abs')abs++;else if(w.status==='rps')rps++;else present++;});});return{name:chef.name,total,present,abs,rps};});
+  const absList=[],rpsList=[];
+  chefs.forEach(chef=>{gct(chef).forEach(task=>{gw(chef.id,task.id).forEach(w=>{const emp=getEmp(w.id);if(w.status==='abs')absList.push({...w,name:emp?emp.name:w.name,chefName:chef.name,taskName:task.name});if(w.status==='rps')rpsList.push({...w,name:emp?emp.name:w.name,chefName:chef.name,taskName:task.name});});});});
+  const totalAll=chefStats.reduce((s,c)=>s+c.total,0);const presentAll=chefStats.reduce((s,c)=>s+c.present,0);
+  function makeRows(list){if(!list.length)return'<div class="empty-report">لا يوجد سجلات</div>';return'<div class="report-card">'+list.map(w=>`<div class="report-row"><div class="r-id">${w.id}</div><div class="r-name">${w.name}</div><div class="r-task">${w.taskName}</div><div class="r-chef">${w.chefName}</div></div>`).join('')+'</div>';}
+  return`<div class="hist-view-banner"><div><div class="hist-view-banner-txt">يوم ${formatDateDisplay(snap.date)}</div><div class="hist-view-banner-sub">${totalAll} ouvrier — ${presentAll} حاضر — ${absList.length} ABS — ${rpsList.length} RPS</div></div><button class="btn-excel" onclick="exportExcelSnap('${snap.date}')">⬇ Excel</button></div>
+  <div class="rapport-section"><div class="rapport-section-title">ملخص الفرق</div><div class="chef-summary-grid">${chefStats.map(c=>`<div class="chef-summary-card"><div class="cscard-name">${c.name}</div><div class="cscard-total"><div class="cscard-total-l">إجمالي</div><div class="cscard-total-v">${c.total}</div></div><div class="cscard-stats"><div class="cscard-stat"><div class="cscard-stat-v" style="color:#27500A">${c.present}</div><div class="cscard-stat-l">Présent</div></div><div class="cscard-stat"><div class="cscard-stat-v" style="color:#A32D2D">${c.abs}</div><div class="cscard-stat-l">ABS</div></div><div class="cscard-stat"><div class="cscard-stat-v" style="color:#854F0B">${c.rps}</div><div class="cscard-stat-l">RPS</div></div></div></div>`).join('')}</div></div>
+  <div class="rapport-section"><div class="rapport-section-title" style="color:#A32D2D">Absents (ABS) — ${absList.length} ouvrier</div>${makeRows(absList)}</div>
+  <div class="rapport-section"><div class="rapport-section-title" style="color:#854F0B">يوم Repos (RPS) — ${rpsList.length} ouvrier</div>${makeRows(rpsList)}</div>`;
+}
+
+// ===== NON ASSIGNÉS =====
+function getAssignedPointages(){
+  const pts=new Set();
+  CHEFS.forEach(chef=>{getChefTasks(chef).forEach(task=>{getW(chef.id,task.id).forEach(w=>pts.add(w.id));});});
+  return pts;
+}
+function renderNonAssignes(){
+  const assigned=getAssignedPointages();
+  const nonAssigned=EMPLOYES.filter(e=>!assigned.has(e.pointage));
+  const el=document.getElementById('nonassignes-content');
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.25rem">
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">عمال غير مقيدين عند أي رئيس فرقة</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:3px">Présents dans Liste mais non affectés à un chef</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="liste-stat-chip">Total: <span style="color:var(--red);font-weight:600">${nonAssigned.length}</span> ouvrier</div>
+        <div class="liste-stat-chip">Affectés: <span style="color:var(--green-text);font-weight:600">${EMPLOYES.length-nonAssigned.length}</span></div>
+      </div>
+    </div>
+    ${nonAssigned.length===0
+      ? `<div style="text-align:center;padding:3rem;background:var(--green-light);border-radius:var(--radius-lg);border:0.5px solid #9FE1CB">
+          <div style="font-size:32px;margin-bottom:12px">✓</div>
+          <div style="font-size:14px;font-weight:600;color:var(--green-text)">جميع العمال مقيدون</div>
+          <div style="font-size:12px;color:#3B6D11;margin-top:4px">كل ouvrier في Liste Présent عنده رئيس فرقة</div>
+        </div>`
+      : `<div class="liste-table-wrap">
+          <div class="liste-table-head" style="grid-template-columns:1fr 2fr 1fr 120px">
+            <div class="col-cin">رقم CIN</div>
+            <div>الاسم الكامل</div>
+            <div>N° Pointage</div>
+            <div>إجراء</div>
+          </div>
+          ${nonAssigned.map(e=>`
+            <div class="liste-row" style="grid-template-columns:1fr 2fr 1fr 120px">
+              <div class="liste-cell mono col-cin">${e.cin||'—'}</div>
+              <div class="liste-cell">${e.name}</div>
+              <div class="liste-cell pt">${e.pointage}</div>
+              <div class="liste-actions">
+                <button class="btn-xs" style="border-color:var(--green);color:var(--green);font-size:11px;padding:3px 8px" onclick="assignQuick('${e.pointage}')">+ تقييد</button>
+              </div>
+            </div>`).join('')}
+        </div>`
+    }`;
+}
+
+function assignQuick(pointage){
+  // Go to pointage tab with a hint
+  setPage('pointage');
+  const emp=getEmployeByPointage(pointage);
+  const si=document.getElementById('save-ind');
+  si.textContent=`Affecter: ${pointage}${emp?' — '+emp.name:''}`;
+  si.style.background='var(--blue-light)';si.style.color='var(--blue)';si.style.display='block';
+  setTimeout(()=>{si.style.display='none';si.style.background='';si.style.color='';si.textContent='Enregistré ✓';},4000);
+}
+
+
+
+
+// ===== IMPORT EXCEL =====
+let importData=[],importHeaders=[];
+function resetImport(){
+  importData=[];importHeaders=[];
+  document.getElementById('import-step1').style.display='block';
+  document.getElementById('import-step2').style.display='none';
+  document.getElementById('import-confirm-btn').style.display='none';
+  document.getElementById('excel-file-input').value='';
+}
+function handleExcelFile(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      if(rows.length<2){alert('Fichier vide');return;}
+      importHeaders=rows[0].map((h,i)=>h?String(h):`Col${i+1}`);
+      importData=rows.slice(1).filter(r=>r.some(c=>c!==''));
+      const mkOpts=(sel,empty)=>{sel.innerHTML=(empty?'<option value="">— Optionnel —</option>':'')+importHeaders.map((h,i)=>`<option value="${i}">${h}</option>`).join('');};
+      const cnom=document.getElementById('col-nom');
+      const cprenom=document.getElementById('col-prenom');
+      const cc=document.getElementById('col-cin');
+      const cp=document.getElementById('col-pt');
+      mkOpts(cnom,false);mkOpts(cprenom,true);mkOpts(cc,true);mkOpts(cp,true);
+      // Auto-detect columns
+      // Auto-detect: scan headers and assign by exact match
+      let nomIdx=-1,prenomIdx=-1,cinIdx=-1,ptIdx=-1;
+      importHeaders.forEach((h,i)=>{
+        const hl=h.toLowerCase().trim().replace(/[^a-z]/g,'');
+        if(hl==='nom') nomIdx=i;
+        if(hl==='prnom'||hl==='prenom') prenomIdx=i;
+        if(hl==='cin') cinIdx=i;
+        if(hl==='pointage'||hl==='npointage') ptIdx=i;
+      });
+      // Fallback partial
+      if(nomIdx<0) importHeaders.forEach((h,i)=>{const hl=h.toLowerCase();if(hl.includes('nom')&&!hl.includes('pr'))nomIdx=i;});
+      if(prenomIdx<0) importHeaders.forEach((h,i)=>{const hl=h.toLowerCase();if(hl.includes('pr'))prenomIdx=i;});
+      if(cinIdx<0) importHeaders.forEach((h,i)=>{const hl=h.toLowerCase();if(hl.includes('cin'))cinIdx=i;});
+      if(ptIdx<0) importHeaders.forEach((h,i)=>{const hl=h.toLowerCase();if(hl.includes('point'))ptIdx=i;});
+      if(nomIdx>=0) cnom.value=nomIdx;
+      if(prenomIdx>=0) cprenom.value=prenomIdx;
+      if(cinIdx>=0) cc.value=cinIdx;
+      if(ptIdx>=0) cp.value=ptIdx;
+      document.getElementById('import-file-info').textContent=`${file.name} — ${importData.length} lignes`;
+      document.getElementById('import-step1').style.display='none';
+      document.getElementById('import-step2').style.display='block';
+      document.getElementById('import-confirm-btn').style.display='block';
+      updateImportPreview();
+      [cnom,cprenom,cc,cp].forEach(s=>s.addEventListener('change',updateImportPreview));
+    }catch(err){alert('Erreur de lecture: '+err.message);}
+  };
+  reader.readAsArrayBuffer(file);
+}
+function updateImportPreview(){
+  const cnom=parseInt(document.getElementById('col-nom').value);
+  const cpre=document.getElementById('col-prenom').value;
+  const cc=document.getElementById('col-cin').value;
+  const cp=document.getElementById('col-pt').value;
+  const hdr='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;padding:3px 0;margin-bottom:4px;font-weight:600;font-size:11px;color:var(--text3)"><span>Nom</span><span>Prénom</span><span>CIN</span><span>Pointage</span></div>';
+  const rows=importData.slice(0,5).map(r=>{
+    const nom=r[cnom]||'—';
+    const prenom=cpre!==''?r[parseInt(cpre)]||'—':'—';
+    const cin=cc!==''?r[parseInt(cc)]||'—':'—';
+    const pt=cp!==''?r[parseInt(cp)]||'—':'—';
+    return`<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;padding:3px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:12px;font-weight:600">${nom}</span><span style="font-size:12px">${prenom}</span><span style="font-size:12px;color:var(--text3)">${cin}</span><span style="font-size:12px;color:var(--blue)">${pt}</span></div>`;
+  }).join('');
+  document.getElementById('import-preview').innerHTML=hdr+rows+(importData.length>5?`<div style="color:var(--text3);padding-top:4px;font-size:11px">... et ${importData.length-5} autre(s)</div>`:'');
+  document.getElementById('import-summary').textContent=`${importData.length} ouvrier(s) à importer`;
+}
+
+function viderListe(){
+  if(!confirm('Supprimer TOUS les '+EMPLOYES.length+' ouvriers de la liste ? Cette action est irréversible.')) return;
+  EMPLOYES=[];
+  saveState();
+  renderListe();
+  renderContent();
+  const si=document.getElementById('save-ind');
+  si.textContent='Liste vidée ✓';si.style.display='block';
+  setTimeout(()=>si.style.display='none',2000);
+}
+function confirmImport(){
+  const cnom=parseInt(document.getElementById('col-nom').value);
+  const cpre=document.getElementById('col-prenom').value;
+  const cc=document.getElementById('col-cin').value;
+  const cp=document.getElementById('col-pt').value;
+  let added=0,skipped=0;
+  importData.forEach(r=>{
+    const nom=String(r[cnom]||'').trim();if(!nom)return;
+    const prenom=cpre!==''?String(r[parseInt(cpre)]||'').trim():'';
+    const name=(nom+' '+prenom).trim();
+    const cin=cc!==''?String(r[parseInt(cc)]||'').trim():'';
+    let pt=cp!==''?String(r[parseInt(cp)]||'').trim():'';
+    if(!pt){pt='F-'+String(state.nextId++).padStart(3,'0');}
+    if(EMPLOYES.find(e=>e.pointage===pt)){skipped++;return;}
+    EMPLOYES.push({cin,name,nom,prenom,pointage:pt});added++;
+  });
+  closeModal('import-modal');resetImport();saveState();renderListe();renderContent();
+  const si=document.getElementById('save-ind');
+  si.textContent=`${added} ouvrier(s) importé(s)${skipped>0?' — '+skipped+' ignoré(s)':''}  ✓`;
+  si.style.display='block';setTimeout(()=>{si.textContent='Enregistré ✓';si.style.display='none';},4000);
+}
+
+
+function viderListe(){
+  const msg='Tapez CONFIRMER pour vider toute la liste (action irréversible)';
+  const rep=prompt(msg);
+  if(rep===null) return;
+  if(rep.trim().toUpperCase()==='CONFIRMER'){
+    if(confirm('Dernière confirmation — supprimer les '+EMPLOYES.length+' ouvriers ?')){
+      EMPLOYES=[];
+      saveState();
+      renderListe();
+      const si=document.getElementById('save-ind');
+      si.textContent='Liste vidée ✓';si.style.display='block';
+      setTimeout(()=>si.style.display='none',2500);
+    }
+  } else {
+    alert('Mot incorrect — opération annulée.');
+  }
+}
+function exportExcel(){buildExcel(CHEFS,ALL_TASKS,getW,getChefTasks,todayDisplay,'Pointage_AZURA45_'+todayKey+'.xlsx');}
+function exportExcelSnap(dateKey){
+  const snap=histArchive[dateKey];if(!snap)return;
+  const tasks=snap.tasks||[];const chefs=snap.chefs||[];const workers=snap.workers||{};const emps=snap.employes||[];
+  function gw(c,t){return workers[c+'_'+t]||[]}
+  function gct(chef){return(chef.tasks||tasks.map(t=>t.id)).map(tid=>tasks.find(t=>t.id===tid)).filter(Boolean)}
+  buildExcel(chefs,tasks,gw,gct,formatDateDisplay(dateKey),'Pointage_AZURA45_'+dateKey+'.xlsx',emps);
+}
+function buildExcel(chefs,tasks,gwFn,gctFn,dateLabel,fileName,emps){
+  const getEmp=pt=>(emps||EMPLOYES).find(e=>e.pointage===pt);
+  const wb=XLSX.utils.book_new();
+  const sd=[['POINTAGE PHYSIQUE — AZURA 45'],['التاريخ: '+dateLabel],[],["Chef equipe","Effectif","Presents","ABS","RPS"]];
+  let tp=0,ta=0,tr=0,tt=0;
+  chefs.forEach(chef=>{let total=0,present=0,abs=0,rps=0;gctFn(chef).forEach(task=>{gwFn(chef.id,task.id).forEach(w=>{total++;tt++;if(w.status==='abs'){abs++;ta++;}else if(w.status==='rps'){rps++;tr++;}else{present++;tp++;}});});sd.push([chef.name,total,present,abs,rps]);});
+  sd.push([],['الإجمالي',tt,tp,ta,tr]);
+  const ws1=XLSX.utils.aoa_to_sheet(sd);ws1['!cols']=[{wch:25},{wch:12},{wch:12},{wch:12},{wch:12}];XLSX.utils.book_append_sheet(wb,ws1,'ملخص');
+  const ad=[['Absents ABS — '+dateLabel],[],["N° Pointage","Nom","Operation","Chef equipe"]];
+  chefs.forEach(chef=>{gctFn(chef).forEach(task=>{gwFn(chef.id,task.id).filter(w=>w.status==='abs').forEach(w=>{const emp=getEmp(w.id);ad.push([w.id,emp?emp.name:w.name,task.name,chef.name]);});});});
+  const ws2=XLSX.utils.aoa_to_sheet(ad);ws2['!cols']=[{wch:14},{wch:25},{wch:20},{wch:25}];XLSX.utils.book_append_sheet(wb,ws2,'Absents ABS');
+  const rd=[['Repos RPS — '+dateLabel],[],["N° Pointage","Nom","Operation","Chef equipe"]];
+  chefs.forEach(chef=>{gctFn(chef).forEach(task=>{gwFn(chef.id,task.id).filter(w=>w.status==='rps').forEach(w=>{const emp=getEmp(w.id);rd.push([w.id,emp?emp.name:w.name,task.name,chef.name]);});});});
+  const ws3=XLSX.utils.aoa_to_sheet(rd);ws3['!cols']=[{wch:14},{wch:25},{wch:20},{wch:25}];XLSX.utils.book_append_sheet(wb,ws3,'Repos RPS');
+  // Liste Présent sheet
+  const ld=[['Liste Présent — AZURA 45'],[],['رقم CIN','الاسم الكامل','N° Pointage']];
+  (emps||EMPLOYES).forEach(e=>ld.push([e.cin,e.name,e.pointage]));
+  const ws4=XLSX.utils.aoa_to_sheet(ld);ws4['!cols']=[{wch:14},{wch:30},{wch:14}];XLSX.utils.book_append_sheet(wb,ws4,'Liste Présent');
+  XLSX.writeFile(wb,fileName);
+}
+</script>
+</body>
+</html>
