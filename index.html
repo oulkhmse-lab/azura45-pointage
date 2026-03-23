@@ -1347,7 +1347,7 @@ function buildExcel(chefs,tasks,gwFn,gctFn,dateLabel,fileName,emps){
   const ws4=XLSX.utils.aoa_to_sheet(ld);ws4['!cols']=[{wch:14},{wch:30},{wch:14}];XLSX.utils.book_append_sheet(wb,ws4,'Liste Présent');
   XLSX.writeFile(wb,fileName);
 }
-<script>function openImportModal() {
+function openImportModal() {
   document.getElementById("import-modal").classList.add("open");
 }
 document.addEventListener("DOMContentLoaded", function () {
