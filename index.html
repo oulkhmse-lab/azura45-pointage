@@ -224,8 +224,14 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var
       <div style="font-size:18px;font-weight:700;color:#1a5c2a;letter-spacing:1px;margin-top:10px">POINTAGE PHYSIQUE</div>
     </div>
     <div style="position:relative;z-index:1;width:100%">
-      <input type="password" id="pwd-input" placeholder="🔒  Mot de passe" onkeydown="if(event.key==='Enter')tryLogin()" style="width:100%;padding:13px 16px;border:2px solid #e0e0da;border-radius:10px;font-size:14px;font-family:var(--font);background:#f4f6f2;color:#1a1f18;margin-bottom:12px;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='#1a5c2a'" onblur="this.style.borderColor='#e0e0da'">
-      <button class="login-btn" onclick="tryLogin()" style="width:100%;padding:14px;background:#1a5c2a;color:#fff;border:none;border-radius:10px;font-size:15px;font-family:var(--font);font-weight:700;cursor:pointer;letter-spacing:.3px">🔐 Connexion</button>
+<input type="password" id="pwd-input" placeholder="🔒 Mot de passe"
+style="width:100%;padding:13px 16px;border:2px solid #e0e0da;border-radius:10px;font-size:14px;font-family:var(--font);background:#f4f6f2;color:#1a1f18;margin-bottom:12px;outline:none;transition:border-color .2s"
+onfocus="this.style.borderColor='#1a5c2a'"
+onblur="this.style.borderColor='#e0e0da'">
+     <button class="login-btn" id="loginBtn" 
+style="width:100%;padding:14px;background:#1a5c2a;color:#fff;border:none;border-radius:10px;font-size:15px;font-family:var(--font);font-weight:700;cursor:pointer;letter-spacing:.3px">
+🔐 Connexion
+</button>
       <div class="login-err" id="login-err" style="font-size:12px;color:#A32D2D;margin-top:8px;display:none;text-align:center">❌ Mot de passe incorrect. Réessayez.</div>
     </div>
   </div>
@@ -1341,6 +1347,36 @@ function buildExcel(chefs,tasks,gwFn,gctFn,dateLabel,fileName,emps){
   const ws4=XLSX.utils.aoa_to_sheet(ld);ws4['!cols']=[{wch:14},{wch:30},{wch:14}];XLSX.utils.book_append_sheet(wb,ws4,'Liste Présent');
   XLSX.writeFile(wb,fileName);
 }
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const input = document.getElementById("pwd-input");
+  const btn = document.getElementById("loginBtn");
+  const error = document.getElementById("login-err");
+
+  function tryLogin() {
+    const password = input.value.trim();
+
+    if (password === "1234") {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("app-screen").style.display = "block";
+    } else {
+      error.style.display = "block";
+      input.style.borderColor = "#A32D2D";
+    }
+  }
+
+  // click على الزر
+  btn.addEventListener("click", tryLogin);
+
+  // Enter من الكلافيي 👇 هذا هو لي سولت عليه
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      tryLogin();
+    }
+  });
+
+});
 </script>
 </body>
 </html>
