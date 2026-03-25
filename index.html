@@ -268,12 +268,8 @@ html,body{min-height:100%;background:var(--bg);color:var(--tx);font-family:var(-
     <div class="l-form">
       <input type="password" id="pwd-input" placeholder="🔒 Mot de passe"
         onkeydown="if(event.key==='Enter')tryLogin()">
-      <button class="l-btn" onclick="tryLogin()"><span id="l-btn-txt">🔐 Connexion</span></button>
+      <button class="l-btn" onclick="tryLogin()">🔐 Connexion</button>
       <div class="l-err" id="login-err">❌ Mot de passe incorrect. Réessayez.</div>
-      <div style="margin-top:14px;font-size:11px;color:var(--tx3);text-align:center;line-height:1.8">
-        🔑 <b>Administrateur</b> : accès complet<br>
-        👁 <b>Consultation</b> : lecture seule
-      </div>
     </div>
   </div>
   <div class="lr" id="login-right">
@@ -299,7 +295,6 @@ html,body{min-height:100%;background:var(--bg);color:var(--tx);font-family:var(-
     </div>
     <div class="tb-right">
       <div class="tb-date" id="date-badge"></div>
-      <div id="viewer-badge" style="display:none;align-items:center;gap:6px;background:rgba(255,165,0,0.2);border:1px solid rgba(255,165,0,0.5);border-radius:20px;padding:4px 12px;font-size:11px;color:#ffd080;font-weight:700">👁 Mode Consultation</div>
       <div id="save-ind" class="tb-save">Enregistré ✓</div>
       <button class="tb-btn" onclick="refreshData()">↻ Actualiser</button>
       <button class="tb-btn" onclick="logout()">Déconnexion</button>
@@ -455,8 +450,6 @@ html,body{min-height:100%;background:var(--bg);color:var(--tx);font-family:var(-
 // DATA & STATE
 // =============================================
 const PASSWORD = 'azura45';
-const PASSWORD_VIEWER = 'azura45view';
-let isViewer = false;
 let ALL_TASKS = [
   {id:'t1',name:'Grandes échasses'},
   {id:'t2',name:'Petites échasses ébourgeonnage'},
@@ -494,64 +487,31 @@ document.getElementById('date-badge').textContent =
   new Date().toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
 
 // =============================================
-// STORAGE — Shared (sync entre tous les appareils)
+// STORAGE
 // =============================================
-async function loadState(){
+function loadState(){
   try{
-    const res = await window.storage.get('azura45_main', true);
-    if(res && res.value){
-      const s = JSON.parse(res.value);
-      if(s.tasks&&s.tasks.length) ALL_TASKS = s.tasks;
-      if(s.chefs&&s.chefs.length) CHEFS = s.chefs;
-      if(s.workers) state.workers = s.workers;
-      if(s.nextId) state.nextId = s.nextId;
-      if(s.nextTaskId) state.nextTaskId = s.nextTaskId;
-      if(s.employes) EMPLOYES = s.employes;
-    }
-  }catch(e){
-    try{
-      const s = JSON.parse(localStorage.getItem('azura45_v2')||'{}');
-      if(s.tasks&&s.tasks.length) ALL_TASKS = s.tasks;
-      if(s.chefs&&s.chefs.length) CHEFS = s.chefs;
-      if(s.workers) state.workers = s.workers;
-      if(s.nextId) state.nextId = s.nextId;
-      if(s.nextTaskId) state.nextTaskId = s.nextTaskId;
-      if(s.employes) EMPLOYES = s.employes;
-    }catch(e2){}
-  }
-  try{
-    const res2 = await window.storage.get('azura45_arch', true);
-    if(res2 && res2.value) histArchive = JSON.parse(res2.value);
-  }catch(e){
-    try{ histArchive = JSON.parse(localStorage.getItem('azura45_v2_arch')||'{}'); }catch(e2){}
-  }
+    const s = JSON.parse(localStorage.getItem('azura45_v2')||'{}');
+    if(s.tasks&&s.tasks.length) ALL_TASKS = s.tasks;
+    if(s.chefs&&s.chefs.length) CHEFS = s.chefs;
+    if(s.workers) state.workers = s.workers;
+    if(s.nextId) state.nextId = s.nextId;
+    if(s.nextTaskId) state.nextTaskId = s.nextTaskId;
+    if(s.employes) EMPLOYES = s.employes;
+  }catch(e){}
+  try{ histArchive = JSON.parse(localStorage.getItem('azura45_v2_arch')||'{}'); }catch(e){}
   if(CHEFS.length) activeChef = CHEFS[0].id;
 }
 
 function saveState(){
-  if(isViewer) return;
   clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(async ()=>{
-    const data = JSON.stringify({
+  saveTimeout = setTimeout(()=>{
+    localStorage.setItem('azura45_v2', JSON.stringify({
       tasks:ALL_TASKS, chefs:CHEFS, workers:state.workers,
       nextId:state.nextId, nextTaskId:state.nextTaskId, employes:EMPLOYES
-    });
-    try{
-      await window.storage.set('azura45_main', data, true);
-    }catch(e){
-      localStorage.setItem('azura45_v2', data);
-    }
+    }));
     flash('Enregistré ✓');
   }, 400);
-}
-
-async function saveArchive(){
-  const data = JSON.stringify(histArchive);
-  try{
-    await window.storage.set('azura45_arch', data, true);
-  }catch(e){
-    localStorage.setItem('azura45_v2_arch', data);
-  }
 }
 
 function flash(msg, bg, col){
@@ -566,30 +526,18 @@ function flash(msg, bg, col){
 // =============================================
 // AUTH
 // =============================================
-async function tryLogin(){
+function tryLogin(){
   const pwd = document.getElementById('pwd-input').value;
-  if(pwd === PASSWORD || pwd === PASSWORD_VIEWER){
-    isViewer = pwd === PASSWORD_VIEWER;
+  if(pwd === PASSWORD){
     document.getElementById('login-err').style.display = 'none';
-    document.getElementById('l-btn-txt').textContent = '⏳ Chargement...';
-    await loadState();
+    loadState();
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display = 'block';
-    applyViewerMode();
     render();
   } else {
     document.getElementById('login-err').style.display = 'block';
     document.getElementById('pwd-input').value = '';
     document.getElementById('pwd-input').focus();
-  }
-}
-
-function applyViewerMode(){
-  const badge = document.getElementById('viewer-badge');
-  if(isViewer){
-    badge.style.display = 'flex';
-  } else {
-    badge.style.display = 'none';
   }
 }
 
@@ -599,16 +547,10 @@ function logout(){
   document.getElementById('pwd-input').value = '';
 }
 
-async function refreshData(){
-  const btn = document.querySelector('.tb-btn');
-  if(btn) btn.textContent = '⏳ ...';
-  await loadState();
-  render();
+function refreshData(){
+  loadState(); render();
   if(currentPage==='rapport') renderRapport();
   if(currentPage==='liste') renderListe();
-  if(currentPage==='historique') renderHistorique();
-  if(currentPage==='nonassignes') renderNonAssignes();
-  if(btn) btn.textContent = '↻ Actualiser';
   flash('Actualisé ✓');
 }
 
@@ -673,25 +615,20 @@ function updateArrows(){
 function renderChefsNav(){
   document.getElementById('chefs-nav').innerHTML = CHEFS.map(c=>{
     const act = c.id===activeChef;
-    const editBtns = isViewer ? '' : `<div class="chef-acts${act?' act-bg':''}">
-        <button class="ibtn ibtn-e" onclick="startEditChef('${c.id}')" title="Modifier">✏️</button>
-        <button class="ibtn ibtn-d" onclick="delChefDirect('${c.id}')" title="Supprimer">🗑️</button>
-      </div>`;
     return `<div class="chef-item">
       <div class="chef-name${act?' active':''}" onclick="setChef('${c.id}')"
         onmouseover="if('${c.id}'!==activeChef)this.style.background='var(--gl)'"
         onmouseout="if('${c.id}'!==activeChef)this.style.background=''">${c.name}</div>
-      ${editBtns}
+      <div class="chef-acts${act?' act-bg':''}">
+        <button class="ibtn ibtn-e" onclick="startEditChef('${c.id}')" title="Modifier">✏️</button>
+        <button class="ibtn ibtn-d" onclick="delChefDirect('${c.id}')" title="Supprimer">🗑️</button>
+      </div>
     </div>`;
   }).join('');
-  // Hide "add chef" button for viewers
-  const addBtn = document.querySelector('.chef-add');
-  if(addBtn) addBtn.style.display = isViewer ? 'none' : '';
   setTimeout(updateArrows,100);
 }
 
 function delChefDirect(cid){
-  if(isViewer) return;
   const c = CHEFS.find(x=>x.id===cid);
   if(!c||!confirm(`Supprimer "${c.name}" et tous ses ouvriers ?`)) return;
   CHEFS = CHEFS.filter(x=>x.id!==cid);
@@ -732,19 +669,18 @@ function renderContent(){
               <div class="wid${emp?'':' unk'}">${w.id}</div>
               <div class="wname">${emp?emp.name:w.name}${!emp?` <span style="font-size:10px;color:var(--red)">⚠ Non enregistré</span>`:''}</div>
               ${badge(w.status||'present')}
-              ${isViewer?'':`<button class="bxs b-a${w.status==='abs'?' on':''}" onclick="setSt('${activeChef}','${task.id}','${w.id}','abs')">ABS</button>
+              <button class="bxs b-a${w.status==='abs'?' on':''}" onclick="setSt('${activeChef}','${task.id}','${w.id}','abs')">ABS</button>
               <button class="bxs b-r${w.status==='rps'?' on':''}" onclick="setSt('${activeChef}','${task.id}','${w.id}','rps')">RPS</button>
               <button class="wbtn wbtn-tr" onclick="startTransfer('${activeChef}','${task.id}','${w.id}')">↔️</button>
-              <button class="wbtn wbtn-d" onclick="removeW('${activeChef}','${task.id}','${w.id}')">🗑️</button>`}
+              <button class="wbtn wbtn-d" onclick="removeW('${activeChef}','${task.id}','${w.id}')">🗑️</button>
             </div>`;
           }).join('')}
-        ${isViewer?'':
-        `<div class="add-row">
+        <div class="add-row">
           <input type="text" id="wi_${task.id}" placeholder="N° Pointage" style="max-width:130px"
             oninput="onPtInput('${task.id}')">
           <span class="nprev" id="wp_${task.id}"></span>
           <button class="btn-add" onclick="addW('${activeChef}','${task.id}')">+ Ajouter</button>
-        </div>`}
+        </div>
       </div></div>
     </div>`;
   }).join('');
@@ -756,7 +692,6 @@ function setChef(id){ activeChef=id; render(); }
 function toggleTask(tid){ openTasks.has(tid)?openTasks.delete(tid):openTasks.add(tid); renderContent(); }
 
 function setSt(cid,tid,wid,s){
-  if(isViewer) return;
   const ws=getW(cid,tid), w=ws.find(x=>x.id===wid); if(!w)return;
   w.status = w.status===s?'present':s;
   setW(cid,tid,ws); saveState(); openTasks.add(tid); render();
@@ -776,7 +711,6 @@ function onPtInput(tid){
 }
 
 function addW(cid,tid){
-  if(isViewer) return;
   const el = document.getElementById('wi_'+tid);
   const pt = el.value.trim(); if(!pt)return;
   let dup=null;
@@ -794,7 +728,7 @@ function addW(cid,tid){
   saveState(); openTasks.add(tid); render();
 }
 
-function removeW(cid,tid,wid){ if(isViewer) return; setW(cid,tid,getW(cid,tid).filter(w=>w.id!==wid)); saveState(); openTasks.add(tid); render(); }
+function removeW(cid,tid,wid){ setW(cid,tid,getW(cid,tid).filter(w=>w.id!==wid)); saveState(); openTasks.add(tid); render(); }
 
 function startTransfer(cid,tid,wid){
   const w=getW(cid,tid).find(x=>x.id===wid);
@@ -806,7 +740,6 @@ function startTransfer(cid,tid,wid){
 }
 
 function confirmTransfer(){
-  if(isViewer) return;
   const {cid,tid,wid}=transferData;
   const tc=document.getElementById('tr-chef').value, tt=document.getElementById('tr-task').value;
   if(tc===cid&&tt===tid){ closeModal('modal-transfer'); return; }
@@ -838,7 +771,6 @@ function openNewChef(){
   document.getElementById('modal-new-chef').classList.add('open');
 }
 function confirmNewChef(){
-  if(isViewer) return;
   const name=document.getElementById('nc-name').value.trim(); if(!name)return;
   CHEFS.push({id:'c'+Date.now(), name, tasks:getChk('nc-tasks')});
   activeChef=CHEFS[CHEFS.length-1].id;
@@ -852,7 +784,6 @@ function startEditChef(cid){
   document.getElementById('modal-edit-chef').classList.add('open');
 }
 function confirmEditChef(){
-  if(isViewer) return;
   const name=document.getElementById('ec-name').value.trim(); if(!name)return;
   const c=CHEFS.find(x=>x.id===editChefId); c.name=name; c.tasks=getChk('ec-tasks');
   closeModal('modal-edit-chef'); saveState(); render();
@@ -864,14 +795,12 @@ function startDelChef(cid){
   document.getElementById('modal-del-chef').classList.add('open');
 }
 function confirmDelChef(){
-  if(isViewer) return;
   CHEFS=CHEFS.filter(c=>c.id!==delChefId);
   ALL_TASKS.forEach(t=>delete state.workers[key(delChefId,t.id)]);
   if(activeChef===delChefId) activeChef=CHEFS.length?CHEFS[0].id:'';
   closeModal('modal-del-chef'); saveState(); render();
 }
 function confirmEditWorker(){
-  if(isViewer) return;
   const ni=document.getElementById('edit-wid').value.trim(); if(!ni)return;
   const {cid,tid,wid}=editWorker;
   const ws=getW(cid,tid), w=ws.find(x=>x.id===wid); if(!w)return;
@@ -884,14 +813,13 @@ function confirmEditWorker(){
 // =============================================
 function renderTaches(){
   document.getElementById('taches-content').innerHTML=
-    `<div class="ops-wrap"><div class="ops-hd"><div class="ops-title">Liste des opérations</div>${isViewer?'':'<button class="btn-add" onclick="openNewTask()">+ Nouvelle opération</button>'}</div>`+
-    ALL_TASKS.map(t=>`<div class="ops-row"><div class="ops-name">${t.name}</div>${isViewer?'':'<div style="display:flex;gap:5px"><button class="ibtn ibtn-e" onclick="openEditTask(\''+t.id+'\')">✏️</button><button class="ibtn ibtn-d" onclick="openDelTask(\''+t.id+'\')">🗑️</button></div>'}</div>`).join('')+
+    `<div class="ops-wrap"><div class="ops-hd"><div class="ops-title">Liste des opérations</div><button class="btn-add" onclick="openNewTask()">+ Nouvelle opération</button></div>`+
+    ALL_TASKS.map(t=>`<div class="ops-row"><div class="ops-name">${t.name}</div><div style="display:flex;gap:5px"><button class="ibtn ibtn-e" onclick="openEditTask('${t.id}')">✏️</button><button class="ibtn ibtn-d" onclick="openDelTask('${t.id}')">🗑️</button></div></div>`).join('')+
     `</div>`;
 }
 function openNewTask(){ isNewTask=true; editTaskId=null; document.getElementById('task-title').textContent='Nouvelle opération'; document.getElementById('task-name').value=''; document.getElementById('modal-task').classList.add('open'); }
 function openEditTask(tid){ isNewTask=false; editTaskId=tid; const t=ALL_TASKS.find(x=>x.id===tid); document.getElementById('task-title').textContent="Modifier l'opération"; document.getElementById('task-name').value=t.name; document.getElementById('modal-task').classList.add('open'); }
 function confirmTask(){
-  if(isViewer) return;
   const name=document.getElementById('task-name').value.trim(); if(!name)return;
   if(isNewTask){ const id='t'+state.nextTaskId++; ALL_TASKS.push({id,name}); CHEFS.forEach(c=>{ if(!c.tasks)c.tasks=ALL_TASKS.map(t=>t.id);else c.tasks.push(id); }); }
   else{ const t=ALL_TASKS.find(x=>x.id===editTaskId); t.name=name; }
@@ -899,7 +827,6 @@ function confirmTask(){
 }
 function openDelTask(tid){ delTaskId=tid; const t=ALL_TASKS.find(x=>x.id===tid); document.getElementById('dt-warn').textContent=`Supprimer "${t.name}" et tous ses ouvriers ?`; document.getElementById('modal-del-task').classList.add('open'); }
 function confirmDelTask(){
-  if(isViewer) return;
   ALL_TASKS=ALL_TASKS.filter(t=>t.id!==delTaskId);
   CHEFS.forEach(c=>c.tasks=(c.tasks||[]).filter(tid=>tid!==delTaskId));
   Object.keys(state.workers).forEach(k=>{ if(k.endsWith('_'+delTaskId))delete state.workers[k]; });
@@ -916,12 +843,11 @@ function renderListe(){
       '<div class="l-shell">'
       +'<div class="liste-hd">'
       +'<div class="liste-title">Liste Présent — Ouvriers</div>'
-      +(isViewer?'':'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
       +'<button class="btn-add" style="background:var(--blue)" onclick="document.getElementById(\'modal-import\').classList.add(\'open\')">📂 Importer Excel</button>'
       +'<button class="btn-add" onclick="openAddEmp()">+ Ajouter</button>'
       +'<button onclick="viderListe()" style="padding:6px 14px;border-radius:6px;font-size:12px;font-family:var(--f);cursor:pointer;border:1.5px solid var(--redb);color:var(--red);background:var(--redl);font-weight:600">🗑 Vider la liste</button>'
-      +'</div>')
-      +'</div>'
+      +'</div></div>'
       +'<div class="l-stats" id="l-stats"></div>'
       +'<div class="l-search">'
       +'<select id="l-type" onchange="listeSearchType=this.value;renderListeTable()">'
@@ -963,7 +889,7 @@ function renderListeTable(){
     const nom=e.nom||(e.name||'').split(' ')[0]||'';
     const pre=e.prenom||(e.name||'').split(' ').slice(1).join(' ')||'';
     const ab=act>0?`<span style="font-size:10px;background:var(--gl);color:var(--g);padding:1px 5px;border-radius:8px;margin-right:4px;font-weight:700">${act}</span>`:'';
-    rows+=`<div class="l-row"><div class="lc lc-m c-cin">${e.cin||'—'}</div><div class="lc" style="font-weight:600">${nom}</div><div class="lc">${pre}</div><div class="lc lc-pt">${e.pointage}${ab}</div><div class="la">${isViewer?'':'<button class="ibtn ibtn-e" onclick="openEditEmp('+ri+')">✏️</button><button class="ibtn ibtn-d" onclick="delEmp('+ri+')">🗑️</button>'}</div></div>`;
+    rows+=`<div class="l-row"><div class="lc lc-m c-cin">${e.cin||'—'}</div><div class="lc" style="font-weight:600">${nom}</div><div class="lc">${pre}</div><div class="lc lc-pt">${e.pointage}${ab}</div><div class="la"><button class="ibtn ibtn-e" onclick="openEditEmp(${ri})">✏️</button><button class="ibtn ibtn-d" onclick="delEmp(${ri})">🗑️</button></div></div>`;
   });
   c.innerHTML=`<div class="l-table"><div class="l-th"><div class="c-cin">CIN</div><div>Nom</div><div>Prénom</div><div>N° Pointage</div><div></div></div>${rows}</div>`;
 }
@@ -988,7 +914,6 @@ function openEditEmp(idx){
   document.getElementById('modal-employe').classList.add('open');
 }
 function confirmEmploye(){
-  if(isViewer) return;
   const cin=document.getElementById('emp-cin').value.trim();
   const nom=document.getElementById('emp-nom').value.trim();
   const pre=document.getElementById('emp-pre').value.trim();
@@ -1004,12 +929,10 @@ function confirmEmploye(){
   closeModal('modal-employe'); saveState(); renderListe(); renderContent();
 }
 function delEmp(idx){
-  if(isViewer) return;
   if(!confirm(`Supprimer "${EMPLOYES[idx].name}" ?`))return;
   EMPLOYES.splice(idx,1); saveState(); renderListe(); renderContent();
 }
 function viderListe(){
-  if(isViewer) return;
   const rep=prompt('Tapez CONFIRMER pour vider toute la liste :');
   if(!rep)return;
   if(rep.trim().toUpperCase()==='CONFIRMER'){
@@ -1072,16 +995,15 @@ function doSearch(){
 // HISTORIQUE
 // =============================================
 function saveDaySnap(){
-  if(isViewer) return;
   histArchive[todayKey]={date:todayKey,tasks:JSON.parse(JSON.stringify(ALL_TASKS)),chefs:JSON.parse(JSON.stringify(CHEFS)),workers:JSON.parse(JSON.stringify(state.workers)),employes:JSON.parse(JSON.stringify(EMPLOYES))};
-  saveArchive();
+  localStorage.setItem('azura45_v2_arch',JSON.stringify(histArchive));
   flash('Journée archivée ✓');
   if(currentPage==='historique')renderHistorique();
 }
 function renderHistorique(){
   const days=Object.keys(histArchive).sort().reverse();
   const el=document.getElementById('historique-content');
-  const topbar=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.5rem"><div style="font-size:15px;font-weight:700">Historique des journées</div>${isViewer?'':`<button class="btn-save" onclick="saveDaySnap()">💾 Sauvegarder (${todayDisplay})</button>`}</div>`;
+  const topbar=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.5rem"><div style="font-size:15px;font-weight:700">Historique des journées</div><button class="btn-save" onclick="saveDaySnap()">💾 Sauvegarder (${todayDisplay})</button></div>`;
   if(!days.length){el.innerHTML=topbar+'<div class="h-empty">Aucune journée archivée.</div>';return;}
   const chips=`<div style="font-size:12px;color:var(--tx3);margin-bottom:8px">Jours archivés :</div><div class="h-chips">${days.map(d=>`<div class="h-chip${histViewDate===d?' active':''}" onclick="histViewDate='${d}';renderHistorique()">${fmtDate(d)}</div>`).join('')}</div>`;
   const srch=`<div style="display:flex;gap:8px;margin-bottom:1.5rem"><input type="date" id="h-date" value="${histViewDate||''}" style="font-size:13px;font-family:var(--f);padding:7px 10px;border:1.5px solid var(--bo2);border-radius:7px;background:var(--sur2);color:var(--tx);outline:none"><button class="btn-add" onclick="const v=document.getElementById('h-date').value;if(v){histViewDate=v;renderHistorique();}">Afficher</button></div>`;
@@ -1173,7 +1095,6 @@ function updImportPreview(){
   document.getElementById('imp-sum').textContent=`${xlsData.length} ouvrier(s) à importer`;
 }
 function confirmImport(){
-  if(isViewer) return;
   const cn=parseInt(document.getElementById('col-nom').value);
   const cp=document.getElementById('col-pre').value;
   const cc=document.getElementById('col-cin').value;
