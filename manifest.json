@@ -1,0 +1,24 @@
+{
+  "name": "Pointage AZURA 45",
+  "short_name": "Azura 45",
+  "description": "Gestion des présences ouvriers agricoles",
+  "start_url": "/azura45-pointage/",
+  "display": "standalone",
+  "background_color": "#f0f2f0",
+  "theme_color": "#1a5c2a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
