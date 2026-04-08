@@ -2212,27 +2212,27 @@ function exportFicheResume(){
         if(w.status==='abs')a++;else if(w.status==='rps')r++;else p++;
       });});
       var tot=p+a+r;if(!tot)return '';
-      var absCell=a>0?'<td style="text-align:center;color:#A32D2D;font-weight:bold;padding:3px 4px;border:0.5px solid #ccc">'+a+'</td>':'<td style="text-align:center;padding:3px 4px;border:0.5px solid #ccc;color:#aaa">—</td>';
-      var rpsCell=r>0?'<td style="text-align:center;color:#555;font-weight:bold;padding:3px 4px;border:0.5px solid #ccc">'+r+'</td>':'<td style="text-align:center;padding:3px 4px;border:0.5px solid #ccc;color:#aaa">—</td>';
+      var absCell=a>0?'<td style="text-align:center;color:#A32D2D;font-weight:700;padding:3px 4px;border:0.5px solid #ccc;font-size:9pt">'+a+'</td>':'<td style="text-align:center;padding:3px 4px;border:0.5px solid #ccc;color:#aaa;font-size:9pt">—</td>';
+      var rpsCell=r>0?'<td style="text-align:center;color:#555;font-weight:700;padding:3px 4px;border:0.5px solid #ccc;font-size:9pt">'+r+'</td>':'<td style="text-align:center;padding:3px 4px;border:0.5px solid #ccc;color:#aaa;font-size:9pt">—</td>';
       var blocCell=i===0?'<td rowspan="'+chefs.length+'" style="text-align:center;font-weight:900;font-size:9pt;padding:3px 4px;border:0.5px solid #ccc;background:#f0f0ee;vertical-align:middle">'+bloc+'</td>':'';
       return '<tr>'+blocCell
-        +'<td style="padding:3px 8px;border:0.5px solid #ccc;font-weight:500">'+c.name+'</td>'
-        +'<td style="text-align:center;font-weight:700;padding:3px 4px;border:0.5px solid #ccc;color:#1a5c2a;font-size:9.5pt">'+p+'</td>'
+        +'<td style="padding:3px 8px;border:0.5px solid #ccc;font-weight:500;font-size:9pt">'+c.name+'</td>'
+        +'<td style="text-align:center;font-weight:700;padding:3px 4px;border:0.5px solid #ccc;color:#1a5c2a;font-size:9pt">'+p+'</td>'
         +absCell+rpsCell
-        +'<td style="text-align:center;font-weight:700;padding:3px 4px;border:0.5px solid #ccc">'+tot+'</td>'
+        +'<td style="text-align:center;font-weight:700;padding:3px 4px;border:0.5px solid #ccc;font-size:9pt">'+tot+'</td>'
         +'</tr>';
     }).join('');
     return rows;
   }
 
   function totRow(label,s){
-    var aCell=s.a>0?'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;font-weight:700;color:#A32D2D">'+s.a+'</td>':'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;color:#aaa">—</td>';
-    var rCell=s.r>0?'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;font-weight:700;color:#555">'+s.r+'</td>':'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;color:#aaa">—</td>';
+    var aCell=s.a>0?'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;font-weight:700;color:#A32D2D;font-size:9pt">'+s.a+'</td>':'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;color:#aaa;font-size:9pt">—</td>';
+    var rCell=s.r>0?'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;font-weight:700;color:#555;font-size:9pt">'+s.r+'</td>':'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;color:#aaa;font-size:9pt">—</td>';
     return '<tr style="background:#e0e0dc">'
       +'<td colspan="2" style="padding:4px 8px;border:0.5px solid #bbb;font-weight:700;font-size:8.5pt;color:#222">'+label+'</td>'
-      +'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;font-weight:700;color:#1a5c2a">'+s.p+'</td>'
+      +'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;font-weight:700;color:#1a5c2a;font-size:9pt">'+s.p+'</td>'
       +aCell+rCell
-      +'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;font-weight:900;font-size:10pt;color:#000">'+s.tot+'</td>'
+      +'<td style="text-align:center;padding:4px 4px;border:0.5px solid #bbb;font-weight:900;font-size:9pt;color:#000">'+s.tot+'</td>'
       +'</tr>';
   }
 
@@ -2259,10 +2259,10 @@ function exportFicheResume(){
     +totRow('EFFECTIF EXTERNE',sE)
     +'<tr style="background:#1a5c2a;color:#fff;font-weight:900">'
     +'<td colspan="2" style="padding:5px 8px;border:1px solid #0f3d1c;font-size:9pt">TOTAL GÉNÉRAL</td>'
-    +'<td style="text-align:center;padding:5px;border:1px solid #0f3d1c;color:#4cff88;font-size:11pt">'+gP+'</td>'
-    +'<td style="text-align:center;padding:5px;border:1px solid #0f3d1c;color:#ffcccc">'+(gA||'—')+'</td>'
-    +'<td style="text-align:center;padding:5px;border:1px solid #0f3d1c">'+(gR||'—')+'</td>'
-    +'<td style="text-align:center;padding:5px;border:1px solid #0f3d1c;font-size:13pt">'+gTot+'</td>'
+    +'<td style="text-align:center;padding:5px;border:1px solid #0f3d1c;color:#4cff88;font-size:9pt">'+gP+'</td>'
+    +'<td style="text-align:center;padding:5px;border:1px solid #0f3d1c;color:#ffcccc;font-size:9pt">'+(gA||'—')+'</td>'
+    +'<td style="text-align:center;padding:5px;border:1px solid #0f3d1c;font-size:9pt">'+(gR||'—')+'</td>'
+    +'<td style="text-align:center;padding:5px;border:1px solid #0f3d1c;font-size:9pt">'+gTot+'</td>'
     +'</tr>'
     +'</tbody></table>'
     +'</div>';
