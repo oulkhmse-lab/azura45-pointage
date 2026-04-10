@@ -456,7 +456,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--tx);font-family:var(-
       <div id="secure-msg"></div>
     </div>
     <div style="margin-bottom:1rem">
-      <label style="font-size:12px;color:#555;display:block;margin-bottom:5px;font-weight:500">Code secret</label>
+      <label style="font-size:12px;color:#333;display:block;margin-bottom:5px;font-weight:500">Code secret</label>
       <input id="secure-code-input" type="password" placeholder="Entrez le code secret" style="width:100%;letter-spacing:3px;font-size:16px;text-align:center;border-radius:8px;border:1.5px solid #d0d0d0;padding:10px;font-family:monospace;outline:none;box-sizing:border-box" onkeydown="if(event.key==='Enter')runSecure()" />
     </div>
     <div style="background:#FCEBEB;border:0.5px solid #F09595;border-radius:8px;padding:9px 12px;margin-bottom:1.1rem;display:flex;align-items:flex-start;gap:8px">
@@ -2220,16 +2220,16 @@ function exportPdfSnap(dateKey){
     groups.forEach(function(grp){
       grp.forEach(function(c){gct(c).forEach(function(t){gw(c.id,t.id).forEach(function(w){
         if(w.status==="abs"&&!seenA.has(w.id)){seenA.add(w.id);absN++;
-          absRows+='<tr style="background:#fff5f5"><td style="font-family:monospace;color:#A32D2D;font-weight:bold;padding:1px 4px;font-size:6pt">'+w.id+'</td><td style="padding:1px 4px;font-size:5pt;color:#555">'+sn(c.name)+'</td></tr>';}
+          absRows+='<tr style="background:#fff5f5"><td style="font-family:monospace;color:#A32D2D;font-weight:bold;padding:1px 4px;font-size:6pt">'+w.id+'</td><td style="padding:1px 4px;font-size:5pt;color:#333">'+sn(c.name)+'</td></tr>';}
         if(w.status==="rps"&&!seenR.has(w.id)){seenR.add(w.id);rpsN++;
-          rpsRows+='<tr style="background:#f5f5f0"><td style="font-family:monospace;color:#555;font-weight:bold;padding:1px 4px;font-size:6pt">'+w.id+'</td><td style="padding:1px 4px;font-size:5pt;color:#555">'+sn(c.name)+'</td></tr>';}
+          rpsRows+='<tr style="background:#f5f5f0"><td style="font-family:monospace;color:#333;font-weight:bold;padding:1px 4px;font-size:6pt">'+w.id+'</td><td style="padding:1px 4px;font-size:5pt;color:#333">'+sn(c.name)+'</td></tr>';}
       });});});
     });
     var out='';
     if(absN>0)out+='<div style="background:#FCEBEB;color:#A32D2D;padding:2px 4px;font-size:6.5pt;font-weight:bold;border-bottom:1px solid #ccc">ABSENTS — '+absN+'</div><table style="width:100%;border-collapse:collapse">'+absRows+'</table>';
-    else out+='<div style="color:#aaa;font-size:5.5pt;padding:2px 4px">Aucun absent</div>';
+    else out+='<div style="color:#555;font-size:5.5pt;padding:2px 4px">Aucun absent</div>';
     if(rpsN>0)out+='<div style="background:#f5f5f0;color:#333;padding:2px 4px;font-size:6.5pt;font-weight:bold;border-bottom:1px solid #ccc;margin-top:3px">REPOS — '+rpsN+'</div><table style="width:100%;border-collapse:collapse">'+rpsRows+'</table>';
-    else out+='<div style="color:#aaa;font-size:5.5pt;padding:2px 4px;margin-top:3px">Aucun repos</div>';
+    else out+='<div style="color:#555;font-size:5.5pt;padding:2px 4px;margin-top:3px">Aucun repos</div>';
     return out;
   }
 
@@ -2364,13 +2364,21 @@ function exportFicheResume(){
     +'<div style="font-size:10pt;font-weight:700;color:#000;margin-top:2px">LA DATE : '+dateLabel+'</div>'
     +'</div>'
     +'<table style="width:100%;border-collapse:collapse;font-size:8pt;table-layout:fixed">'
+    +'<colgroup>'
+    +'<col style="width:30px">'
+    +'<col>'
+    +'<col style="width:46px">'
+    +'<col style="width:46px">'
+    +'<col style="width:46px">'
+    +'<col style="width:46px">'
+    +'</colgroup>'
     +'<thead><tr>'
-    +'<th style="background:#1a5c2a;color:#fff;padding:4px 6px;border:1px solid #0f3d1c;width:38px;text-align:center">BLOC</th>'
+    +'<th style="background:#1a5c2a;color:#fff;padding:4px 4px;border:1px solid #0f3d1c;text-align:center">BLOC</th>'
     +'<th style="background:#1a5c2a;color:#fff;padding:4px 6px;border:1px solid #0f3d1c;text-align:left">CHEF D\'ÉQUIPE</th>'
-    +'<th style="background:#1a5c2a;color:#fff;padding:4px 6px;border:1px solid #0f3d1c;width:52px;text-align:center">PRÉSENTS</th>'
-    +'<th style="background:#1a5c2a;color:#fff;padding:4px 6px;border:1px solid #0f3d1c;width:52px;text-align:center">ABS</th>'
-    +'<th style="background:#1a5c2a;color:#fff;padding:4px 6px;border:1px solid #0f3d1c;width:52px;text-align:center">RPS</th>'
-    +'<th style="background:#1a5c2a;color:#fff;padding:4px 6px;border:1px solid #0f3d1c;width:52px;text-align:center">TOTAL</th>'
+    +'<th style="background:#1a5c2a;color:#fff;padding:4px 4px;border:1px solid #0f3d1c;text-align:center">PRÉSENTS</th>'
+    +'<th style="background:#1a5c2a;color:#fff;padding:4px 4px;border:1px solid #0f3d1c;text-align:center">ABS</th>'
+    +'<th style="background:#1a5c2a;color:#fff;padding:4px 4px;border:1px solid #0f3d1c;text-align:center">RPS</th>'
+    +'<th style="background:#1a5c2a;color:#fff;padding:4px 4px;border:1px solid #0f3d1c;text-align:center">TOTAL</th>'
     +'</tr></thead>'
     +'<tbody>'
     +buildRows(bA,'A')
@@ -2441,7 +2449,7 @@ function exportPdfDirecteur(){
       var opRows=ops.map(function(task){
         var ws=getW(c.id,task.id);
         var pts=ws.map(function(w){
-          var col=w.status==='abs'?'color:#A32D2D;font-weight:900':w.status==='rps'?'color:#555;font-weight:900':'color:#000;font-weight:900';
+          var col=w.status==='abs'?'color:#A32D2D;font-weight:900':w.status==='rps'?'color:#000;font-weight:900':'color:#000;font-weight:900';
           var sfx=w.status==='abs'?' A':w.status==='rps'?' R':'';
           return '<span style="font-family:monospace;font-size:8pt;background:#f0f0ee;border-radius:2px;padding:0px 3px;margin:1px;display:inline-block;'+col+'">'+w.id+sfx+'</span>';
         }).join('');
@@ -2451,7 +2459,7 @@ function exportPdfDirecteur(){
           +'</tr>';
       }).join('');
 
-      var absInfo=(s.a>0?'<span style="color:#A32D2D;font-weight:bold"> · ✗'+s.a+'</span>':'')+(s.r>0?'<span style="color:#555;font-weight:bold"> · ◷'+s.r+'</span>':'');
+      var absInfo=(s.a>0?'<span style="color:#A32D2D;font-weight:bold"> · ✗'+s.a+'</span>':'')+(s.r>0?'<span style="color:#333;font-weight:bold"> · ◷'+s.r+'</span>':'');
       return '<div style="border-bottom:2px solid #1a5c2a">'
         +'<div style="background:#e8f5eb;padding:2px 8px;display:flex;justify-content:space-between;align-items:center">'
         +'<span style="font-size:9pt;font-weight:bold;color:#0f3d1c">'+c.name+'</span>'
@@ -2473,7 +2481,7 @@ function exportPdfDirecteur(){
       +'<span style="font-size:8pt;color:#333"><b>Effectif:</b> '+(gP+gA+gR)+'</span>'
       +'<span style="font-size:8pt;color:#1a5c2a"><b>Présents:</b> '+gP+'</span>'
       +'<span style="font-size:8pt;color:#A32D2D"><b>Absents:</b> '+gA+'</span>'
-      +'<span style="font-size:8pt;color:#555"><b>Repos:</b> '+gR+'</span>'
+      +'<span style="font-size:8pt;color:#000"><b>Repos:</b> '+gR+'</span>'
       +'</div>'
       +chefBlocks
       +'<div style="background:#1a5c2a;color:#fff;padding:2px 10px;font-size:7pt;font-weight:bold;display:flex;justify-content:space-between">'
