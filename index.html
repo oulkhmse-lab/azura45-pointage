@@ -870,6 +870,7 @@ async function tryLogin(){
     activeChef='';
     openTasks=new Set();
     currentPage='pointage';
+    window._blocOpen={a:false,b:false,ext:false};
     render();initDark();buildNotifications();loadArchiveMetaLite();startAutoBackup();startSessionTimeout();
     lbtn.disabled=false;lbtn.childNodes[0].textContent='Connexion';
     if(lsp)lsp.style.display='none';
@@ -4382,6 +4383,7 @@ auth.onAuthStateChanged(async function(user){
     activeChef='';
     openTasks=new Set();
     currentPage='pointage';
+    window._blocOpen={a:false,b:false,ext:false};
     render();initDark();buildNotifications();loadArchiveMetaLite();startAutoBackup();startSessionTimeout();
   }
 });
