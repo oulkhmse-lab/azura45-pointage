@@ -1369,7 +1369,7 @@ function renderContent(){
     var ph=el('div');
     ph.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;gap:8px;color:var(--tx3)';
     var icon=el('div','','👈');icon.style.cssText='font-size:28px;opacity:0.4';
-    var msg=el('div','','Sélectionnez un chef d'équipe pour afficher les détails');
+    var msg=el('div','');msg.textContent="Sélectionnez un chef d'équipe pour afficher les détails";
     msg.style.cssText='font-size:13px;text-align:center;max-width:180px;line-height:1.5;opacity:0.6';
     ph.appendChild(icon);ph.appendChild(msg);
     content.appendChild(ph);
