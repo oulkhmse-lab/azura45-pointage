@@ -1310,7 +1310,7 @@ function renderChefsNav(){
   function chefItem(c,gkey,container){
     var target=container||nav;
     var item=el('div','chef-item');
-    item.style.cssText='border-bottom:2px solid var(--bo2);padding:10px 12px';
+    item.style.cssText='border-bottom:2px solid var(--bo2);padding:6px 12px;cursor:pointer;transition:background .15s;'+(c.id===activeChef?'background:#e8f3ec;':'');
     // السطر الأول: avatar + اسم + أزرار
     var topLine=el('div');topLine.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:5px';
     var initials=c.name.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();
@@ -1329,7 +1329,7 @@ function renderChefsNav(){
     });});
     var t=cP.size+cA.size+cR.size;
     if(t>0){
-      var sd=el('div');sd.style.cssText='display:flex;gap:6px;padding-left:42px;margin-bottom:4px';
+      var sd=el('div');sd.style.cssText='display:flex;gap:6px;padding-left:42px;margin-top:1px';
       [[cP.size,'var(--g)','✓'],[cA.size,'var(--red)','✗'],[cR.size,'var(--gold)','◷'],[t,'var(--tx2)','=']].forEach(function(s){
         var sp=el('span','',s[2]+' '+s[0]);sp.style.cssText='font-size:11px;font-weight:700;color:'+s[1];sd.appendChild(sp);
       });
