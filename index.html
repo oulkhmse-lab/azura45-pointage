@@ -316,7 +316,11 @@ html,body{min-height:100%;background:var(--bg);color:var(--tx);font-family:var(-
 </style>
 </head>
 <body style="padding-bottom:70px">
-<div id="login-screen">
+<div id="loading-overlay" style="display:none;position:fixed;inset:0;z-index:999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:16px">
+  <img src="logo.png" onerror="this.style.display='none'" style="width:72px;height:72px;object-fit:contain;opacity:.9">
+  <div style="width:36px;height:36px;border:3px solid var(--gl);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite"></div>
+  <div style="font-size:13px;color:var(--tx2);font-weight:500;letter-spacing:.5px">Chargement des données...</div>
+</div>
   <div class="ll">
     <div class="l-brand">
       <img src="logo.png" onerror="this.style.display='none'" alt="Azura 45">
@@ -904,7 +908,10 @@ async function tryLogin(){
     currentPage='pointage';
     window._blocOpen={a:false,b:false,ext:false};
     window._chefSearch='';
-    render();initDark();buildNotifications();loadArchiveMetaLite();startAutoBackup();startSessionTimeout();
+    document.getElementById('loading-overlay').style.display='flex';
+    await loadArchiveMetaLite();
+    document.getElementById('loading-overlay').style.display='none';
+    render();initDark();buildNotifications();startAutoBackup();startSessionTimeout();
     lbtn.disabled=false;lbtn.childNodes[0].textContent='Connexion';
     if(lsp)lsp.style.display='none';
   }catch(e){
@@ -1431,10 +1438,10 @@ function renderContent(){
   content.innerHTML='';
   if(!chef){
     var ph=el('div');
-    ph.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;gap:8px;color:var(--tx3)';
-    var icon=el('div','','👈');icon.style.cssText='font-size:28px;opacity:0.4';
+    ph.style.cssText='display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;padding:24px 16px;gap:10px;color:var(--tx3);text-align:center';
+    var icon=el('div','','👈');icon.style.cssText='font-size:22px;opacity:0.35';
     var msg=el('div','');msg.textContent="Sélectionnez un chef d'équipe pour afficher les détails";
-    msg.style.cssText='font-size:13px;text-align:center;max-width:180px;line-height:1.5;opacity:0.6';
+    msg.style.cssText='font-size:13px;line-height:1.5;max-width:200px;opacity:0.55';
     ph.appendChild(icon);ph.appendChild(msg);
     content.appendChild(ph);
     return;
@@ -4475,7 +4482,10 @@ auth.onAuthStateChanged(async function(user){
     currentPage='pointage';
     window._blocOpen={a:false,b:false,ext:false};
     window._chefSearch='';
-    render();initDark();buildNotifications();loadArchiveMetaLite();startAutoBackup();startSessionTimeout();
+    document.getElementById('loading-overlay').style.display='flex';
+    await loadArchiveMetaLite();
+    document.getElementById('loading-overlay').style.display='none';
+    render();initDark();buildNotifications();startAutoBackup();startSessionTimeout();
   }
 });
 
