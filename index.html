@@ -1240,7 +1240,16 @@ function renderChefsNav(){
   searchBox.placeholder='Rechercher un chef...';
   searchBox.value=window._chefSearch||'';
   searchBox.style.cssText='width:100%;padding:6px 10px;font-size:12px;border:0.5px solid var(--bo2);border-radius:6px;background:var(--sur);color:var(--tx1);margin-bottom:6px;outline:none';
-  searchBox.oninput=function(){window._chefSearch=this.value.trim().toLowerCase();renderChefsNav();};
+  searchBox.oninput=function(){
+    window._chefSearch=this.value.trim().toLowerCase();
+    // نفلتر chef items مباشرة بدون re-render
+    var q=window._chefSearch;
+    nav.querySelectorAll('.chef-item').forEach(function(item){
+      var name=item.querySelector('.chef-name');
+      if(!name)return;
+      item.style.display=(!q||name.textContent.toLowerCase().indexOf(q)!==-1)?'':'none';
+    });
+  };
   nav.appendChild(searchBox);
 
   var groups=[
