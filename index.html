@@ -109,7 +109,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--tx);font-family:var(-
 .leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx2)}
 .leg-dot{width:8px;height:8px;border-radius:50%}
 .pt-layout{display:flex;gap:16px;align-items:flex-start}
-.sidebar{width:230px;flex-shrink:0;background:var(--sur);border-radius:var(--rl);border:1px solid var(--bo);overflow:hidden}
+.sidebar{width:280px;flex-shrink:0;background:var(--sur);border-radius:var(--rl);border:1px solid var(--bo);overflow:hidden}
 .sidebar-hd{background:var(--g);padding:9px 12px}
 .sidebar-title{font-size:11px;font-weight:700;color:#fff;letter-spacing:.5px;text-transform:uppercase}
 .chef-scroll{max-height:500px;overflow-y:auto;scrollbar-width:none}
@@ -1317,7 +1317,7 @@ function renderChefsNav(){
     var av=el('div','',initials);
     av.style.cssText='width:34px;height:34px;border-radius:50%;background:#1a4a2e;color:#fff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0';
     var nameDiv=el('div','chef-name'+(c.id===activeChef?' active':''),c.name);
-    nameDiv.style.cssText='font-size:12px;font-weight:500;flex:1;cursor:pointer';
+    nameDiv.style.cssText='font-size:12px;font-weight:500;flex:1;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
     (function(cid){nameDiv.onclick=function(){setChef(cid);};})(c.id);
     topLine.appendChild(av);topLine.appendChild(nameDiv);
     item.appendChild(topLine);
