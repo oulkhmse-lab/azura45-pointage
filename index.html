@@ -585,7 +585,7 @@ var EMPLOYES=[],DEPARTS=[],state={workers:{},nextId:1,nextTaskId:7};
 var pdfGroups={a:[],b:[],ext:[]};
 var blocLabels={a:'Bloc A',b:'Bloc B',ext:'Effectif Externe'};
 var jourRepos=false;
-var activeChef='c1',openTasks=new Set(['t1']),currentPage='pointage';
+var activeChef='',openTasks=new Set(),currentPage='pointage';
 var histArchive={},histViewDate=null,histMeta={},histLoaded=new Set(),histFilterFrom='',histFilterTo='';
 var editChefId=null,editTaskId=null,isNewTask=false;
 var editEmpIdx=null,transferData=null;
@@ -639,7 +639,7 @@ var TABS=[
 
 async function loadState(){
   try{var s=(await db.ref('azura45/main').once('value')).val();if(s){if(s.tasks&&s.tasks.length)ALL_TASKS=s.tasks;if(s.chefs&&s.chefs.length)CHEFS=s.chefs;if(s.workers)state.workers=s.workers;if(s.nextId)state.nextId=s.nextId;if(s.nextTaskId)state.nextTaskId=s.nextTaskId;if(s.employes)EMPLOYES=s.employes;if(s.departs){DEPARTS=s.departs;var _seen=new Set();DEPARTS=DEPARTS.filter(function(d){var k=String(d.pointage);if(_seen.has(k))return false;_seen.add(k);return true;});var _now=new Date();DEPARTS=DEPARTS.filter(function(d){if(!d.date)return false;var parts=d.date.split('/');if(parts.length<3)return false;var dDate=new Date(parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0]));return (_now-dDate)/(1000*60*60*24)<=20;});}if(s.pdfGroups)pdfGroups=s.pdfGroups;if(s.blocLabels)blocLabels=s.blocLabels;if(typeof s.jourRepos==='boolean')jourRepos=s.jourRepos;}}catch(e){}
-  if(CHEFS.length&&!CHEFS.find(function(c){return c.id===activeChef;}))activeChef=CHEFS[0].id;
+  if(CHEFS.length&&activeChef&&!CHEFS.find(function(c){return c.id===activeChef;}))activeChef='';
 }
 function saveState(){
   if(isViewer)return;
@@ -867,7 +867,7 @@ async function tryLogin(){
     var brp=document.getElementById('btn-repos');if(brp)brp.style.display=isViewer?'none':'block';
     updateJourReposUI();
     // reset UI — لا chef محدد ولا tâche مفتوحة عند كل login
-    activeChef=CHEFS.length?CHEFS[0].id:'c1';
+    activeChef='';
     openTasks=new Set();
     currentPage='pointage';
     render();initDark();buildNotifications();loadArchiveMetaLite();startAutoBackup();startSessionTimeout();
@@ -4370,7 +4370,7 @@ auth.onAuthStateChanged(async function(user){
     var brp=document.getElementById('btn-repos');if(brp)brp.style.display=isViewer?'none':'block';
     updateJourReposUI();
     // reset UI — لا chef محدد ولا tâche مفتوحة عند كل login
-    activeChef=CHEFS.length?CHEFS[0].id:'c1';
+    activeChef='';
     openTasks=new Set();
     currentPage='pointage';
     render();initDark();buildNotifications();loadArchiveMetaLite();startAutoBackup();startSessionTimeout();
