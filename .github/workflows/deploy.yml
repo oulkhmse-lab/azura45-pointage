@@ -15,6 +15,6 @@ jobs:
         run: npm install -g firebase-tools
 
       - name: Deploy to Firebase
-        run: firebase deploy --only hosting --site azura45-pointage --token "$FIREBASE_TOKEN"
+        run: firebase deploy --only hosting --token "$FIREBASE_TOKEN" --project azura45-pointage
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
