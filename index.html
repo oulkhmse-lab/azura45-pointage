@@ -692,10 +692,14 @@ async function loadArchiveMeta(){
   }catch(e){}
 }
 async function loadArchiveMetaLite(){
+  // timeout 8 ثواني — إذا Firebase ما ردش نكملو بدونه
+  function withTimeout(promise,ms){
+    return Promise.race([promise,new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},ms);})]);
+  }
   try{
     // نجيب arch_meta و arch معاً للمقارنة
-    var metaSnap=await db.ref('azura45/arch_meta').once('value');
-    var archKeysSnap=await db.ref('azura45/arch').orderByKey().once('value');
+    var metaSnap=await withTimeout(db.ref('azura45/arch_meta').once('value'),8000);
+    var archKeysSnap=await withTimeout(db.ref('azura45/arch').orderByKey().once('value'),8000);
     var archKeys=archKeysSnap.val()?Object.keys(archKeysSnap.val()):[];
     var metaVal=metaSnap.val();
     var metaKeys=metaVal?Object.keys(metaVal):[];
@@ -910,7 +914,9 @@ async function tryLogin(){
     window._blocOpen={a:false,b:false,ext:false};
     window._chefSearch='';
     var ov2=document.getElementById('loading-overlay');if(ov2)ov2.style.display='flex';
+    var ov2Timer=setTimeout(function(){if(ov2)ov2.style.display='none';},10000);
     await loadArchiveMetaLite();
+    clearTimeout(ov2Timer);
     if(ov2)ov2.style.display='none';
     render();initDark();buildNotifications();startAutoBackup();startSessionTimeout();
     lbtn.disabled=false;lbtn.childNodes[0].textContent='Connexion';
@@ -4488,7 +4494,9 @@ auth.onAuthStateChanged(async function(user){
     window._blocOpen={a:false,b:false,ext:false};
     window._chefSearch='';
     var ov=document.getElementById('loading-overlay');if(ov)ov.style.display='flex';
+    var ovTimer=setTimeout(function(){if(ov)ov.style.display='none';},10000);
     await loadArchiveMetaLite();
+    clearTimeout(ovTimer);
     if(ov)ov.style.display='none';
     render();initDark();buildNotifications();startAutoBackup();startSessionTimeout();
   }
