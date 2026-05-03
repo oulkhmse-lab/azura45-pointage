@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.web.azura45_pointage.twa",
+        "sha256_cert_fingerprints": ["6E:FE:D6:14:CA:0C:BA:3D:F1:F4:B6:18:F1:23:03:30:BB:DB:56:7B:47:F0:28:B9:7A:60:BF:15:9C:0D:0B:A5"]
+      }
+    }]

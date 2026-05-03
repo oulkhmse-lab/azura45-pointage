@@ -2690,19 +2690,35 @@ function buildNotifications(){
   CHEFS.forEach(function(c){chefTasks(c).forEach(function(t){getW(c.id,t.id).forEach(function(w){asgnd.add(w.id);});});});
   var na=EMPLOYES.filter(function(e){return !asgnd.has(e.pointage);}).length;
   if(na>0)alerts.push({type:'warn',msg:na+' ouvrier(s) non affecté(s)'});
-  // 5. 3 غيابات في ظرف 20 يوم (مش بالضرورة متتالية)
+  // 5. 3 غيابات في ظرف 20 يوم — فقط للعمال الغائبين اليوم
   (function(){
+    // نجمع العمال الغائبين اليوم فقط
+    var absentToday=new Set();
+    var absentTodayNames={};
+    CHEFS.forEach(function(c){
+      chefTasks(c).forEach(function(t){
+        getW(c.id,t.id).forEach(function(w){
+          if(w.status==='abs'){
+            absentToday.add(String(w.id));
+            absentTodayNames[String(w.id)]=w.name||String(w.id);
+          }
+        });
+      });
+    });
+    if(absentToday.size===0)return; // لا أحد غائب اليوم → لا إنذارات
     var sorted=Object.keys(histArchive).filter(function(d){return !histArchive[d].reposDay&&d!==todayKey;}).sort();
     var last20=sorted.slice(-20);
-    if(last20.length<3)return;
+    if(last20.length<1)return;
     var empAbs={};
     last20.forEach(function(dk){
       var snap=histArchive[dk];if(!snap||!snap.chefs)return;
       (snap.chefs||[]).forEach(function(c){
         (c.tasks||[]).forEach(function(t){
           ((snap.workers||{})[c.id+'_'+t]||[]).forEach(function(w){
-            if(!empAbs[w.id])empAbs[w.id]={name:w.name||String(w.id),count:0};
-            if(w.status==='abs')empAbs[w.id].count++;
+            var pid=String(w.id);
+            if(!absentToday.has(pid))return; // نتجاهل من ليس غائباً اليوم
+            if(!empAbs[pid])empAbs[pid]={name:absentTodayNames[pid]||w.name||pid,count:0};
+            if(w.status==='abs')empAbs[pid].count++;
           });
         });
       });
