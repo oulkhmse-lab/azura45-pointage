@@ -3646,7 +3646,7 @@ async function pdfExtractAndBuild(pdfDoc,total,onProgress,extractFn){
     var result=pdfMatchPage(pt,cin,lookup);
     if(result)pageMap[i]=result;
     /* debug info للـ progress */
-    var matchInfo=result?(result.chefId!=='__none__'?'✓ '+result.chefName:'بلا رئيس'):'✗ ما لقاش';
+    var matchInfo=result?(result.chefId!=='__none__'?'✓ '+result.chefName:'Sans chef'):'✗ Introuvable';
     onProgress(i,total,pt,cin,matchInfo);
   }
   return {ptRaw:ptRaw,cinRaw:cinRaw,pageMap:pageMap};
@@ -3670,7 +3670,7 @@ async function pdfDownloadChef(pdfFile,pageMap,ptRaw,chefId,prefix){
     copied.forEach(function(p){doc.addPage(p);});
     var bytes=await doc.save();
     var date=new Date().toISOString().slice(0,10);
-    var name=chefId==='__bla__'?'bla_rais':(CHEFS.find(function(c){return c.id===chefId;})||{name:chefId}).name.replace(/\s+/g,'_');
+    var name=chefId==='__bla__'?'Sans_chef':(CHEFS.find(function(c){return c.id===chefId;})||{name:chefId}).name.replace(/\s+/g,'_');
     var a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
     a.download=prefix+'_'+name+'_'+date+'_'+pages.length+'p.pdf';
@@ -3696,8 +3696,8 @@ async function pdfDownloadAll(pdfFile,pageMap,ptRaw,prefix){
       var copied=await doc.copyPages(src,pages.map(function(p){return p-1;}));
       copied.forEach(function(p){doc.addPage(p);});
       var bytes=await doc.save();
-      var fname=cid==='__bla__'?'bla_rais':(CHEFS.find(function(c){return c.id===cid;})||{name:cid}).name.replace(/\s+/g,'_');
-      zip.file(fname+'_'+date+'/'+prefix+'_'+pages.length+'p.pdf',bytes);
+      var fname=cid==='__bla__'?'Sans_chef':(CHEFS.find(function(c){return c.id===cid;})||{name:cid}).name.replace(/\s+/g,'_');
+      zip.file(fname+'_'+date+'.pdf',bytes);
     }
     var blob=await zip.generateAsync({type:'blob'});
     var a=document.createElement('a');
@@ -3770,7 +3770,7 @@ async function pdfDownloadChefBytes(src,isBytes,pageMap,ptRaw,chefId,prefix){
     copied.forEach(function(p){newDoc.addPage(p);});
     var bytes=await newDoc.save();
     var date=new Date().toISOString().slice(0,10);
-    var name=chefId==='__bla__'?'bla_rais':(CHEFS.find(function(c){return c.id===chefId;})||{name:chefId}).name.replace(/\s+/g,'_');
+    var name=chefId==='__bla__'?'Sans_chef':(CHEFS.find(function(c){return c.id===chefId;})||{name:chefId}).name.replace(/\s+/g,'_');
     var a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
     a.download=prefix+'_'+name+'_'+date+'_'+pages.length+'p.pdf';
@@ -3796,8 +3796,8 @@ async function pdfDownloadAllBytes(src,isBytes,pageMap,ptRaw,prefix){
       var copied=await newDoc.copyPages(srcDoc,pages.map(function(p){return p-1;}));
       copied.forEach(function(p){newDoc.addPage(p);});
       var pdfBytes=await newDoc.save();
-      var fname=cid==='__bla__'?'bla_rais':(CHEFS.find(function(c){return c.id===cid;})||{name:cid}).name.replace(/\s+/g,'_');
-      zip.file(fname+'_'+date+'/'+prefix+'_'+pages.length+'p.pdf',pdfBytes);
+      var fname=cid==='__bla__'?'Sans_chef':(CHEFS.find(function(c){return c.id===cid;})||{name:cid}).name.replace(/\s+/g,'_');
+      zip.file(fname+'_'+date+'.pdf',pdfBytes);
     }
     var blob=await zip.generateAsync({type:'blob'});
     var a=document.createElement('a');
