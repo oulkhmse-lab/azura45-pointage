@@ -1,13 +1,18 @@
 {
-  "hosting": {
-    "public": ".",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "headers": [{
-      "source": "/.well-known/assetlinks.json",
-      "headers": [{
-        "key": "Content-Type",
-        "value": "application/json"
-      }]
-    }]
-  }
+  "hosting": [
+    {
+      "target": "azura45",
+      "public": ".",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [{"source": "**", "destination": "/index.html"}],
+      "headers": [{"source": "/.well-known/assetlinks.json", "headers": [{"key": "Content-Type", "value": "application/json"}]}]
+    },
+    {
+      "target": "azura46",
+      "public": ".",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [{"source": "**", "destination": "/index46.html"}],
+      "headers": [{"source": "/.well-known/assetlinks.json", "headers": [{"key": "Content-Type", "value": "application/json"}]}]
+    }
+  ]
 }
