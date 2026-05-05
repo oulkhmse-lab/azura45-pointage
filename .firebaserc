@@ -1,1 +1,6 @@
-{ "projects": { "default": "azura45-pointage" } } 
+{
+  "projects": {
+    "default": "azura45-pointage",
+    "azura46": "azura46-pointage"
+  }
+}
