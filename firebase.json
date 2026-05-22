@@ -4,7 +4,7 @@
       "target": "azura45",
       "public": ".",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "azura46"],
-      "rewrites": [{"source": "**", "destination": "/index.html"}],
+      "rewrites": [{"source": "/privacy-policy", "destination": "/privacy-policy.html"}, {"source": "**", "destination": "/index.html"}],
       "headers": [{"source": "/.well-known/assetlinks.json", "headers": [{"key": "Content-Type", "value": "application/json"}]}]
     },
     {
