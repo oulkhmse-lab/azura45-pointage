@@ -5369,7 +5369,7 @@ function exportFichePointage(overrideDate){
       var hasStd=taskHasStd(task)&&(bloc==='a'||bloc==='b');
       var stdVal=hasStd?getStd(task.id,bloc):0;
       var isRecolte=(task.name||'').toLowerCase().indexOf('récolte')!==-1||(task.name||'').toLowerCase().indexOf('recolte')!==-1;
-      var emptyAfter=isRecolte?5:2;
+      var emptyAfter=isRecolte?6:3;
 
       // صفوف العمال
       for(var wi=0;wi<nW;wi++){
@@ -5396,8 +5396,8 @@ function exportFichePointage(overrideDate){
     // ── 9 صفوف إضافية (عملية جديدة بالقلم) ──────────────────────────
     var extraStart=rows.length;
     push([ec(TOP_MED),ec(TOP_MED),ec(TOP_MED),ec(TOP_MED),ec(TOP_MED),ec(TOP_MED),ec(TOP_MED)],50.5);
-    for(var xi=1;xi<9;xi++) push([ec(),ec(),ec(),ec(),ec(),ec(),ec()],50.5);
-    merges.push({s:{r:extraStart,c:0},e:{r:extraStart+8,c:0}});
+    for(var xi=1;xi<10;xi++) push([ec(),ec(),ec(),ec(),ec(),ec(),ec()],50.5);
+    merges.push({s:{r:extraStart,c:0},e:{r:extraStart+9,c:0}});
 
     // ── Visa label row ────────────────────────────────────────────────
     var vr=rows.length;
