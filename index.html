@@ -4575,15 +4575,19 @@ function openSansChambreModal(sansChambre){
     var n1=el('div');n1.style.cssText='font-size:12px;font-weight:500;color:var(--tx)';n1.textContent=nom;
     var n2=el('div');n2.style.cssText='font-size:11px;color:var(--tx2)';n2.textContent='N° '+pt;
     info.appendChild(n1);info.appendChild(n2);
-    var btn=el('button');btn.style.cssText='font-size:11px;padding:3px 10px;border-radius:20px;background:#1F5C2A;color:#fff;border:none;cursor:pointer;white-space:nowrap';
-    btn.textContent='Assigner';
-    (function(rpt){btn.onclick=function(){
-      wrap.remove();
-      var rooms=Object.keys(SECTEUR_CHAMBRES).sort(function(a,b){return parseInt(a)-parseInt(b);});
-      if(rooms.length===0){toast('Aucune chambre disponible','red');return;}
-      openAjouterModalForWorker(rpt);
-    };})(pt);
-    row.appendChild(av);row.appendChild(info);row.appendChild(btn);
+    if(!isViewer||isConcierge){
+      var btn=el('button');btn.style.cssText='font-size:11px;padding:3px 10px;border-radius:20px;background:#1F5C2A;color:#fff;border:none;cursor:pointer;white-space:nowrap';
+      btn.textContent='Assigner';
+      (function(rpt){btn.onclick=function(){
+        wrap.remove();
+        var rooms=Object.keys(SECTEUR_CHAMBRES).sort(function(a,b){return parseInt(a)-parseInt(b);});
+        if(rooms.length===0){toast('Aucune chambre disponible','red');return;}
+        openAjouterModalForWorker(rpt);
+      };})(pt);
+      row.appendChild(av);row.appendChild(info);row.appendChild(btn);
+    } else {
+      row.appendChild(av);row.appendChild(info);
+    }
     list.appendChild(row);
   });
   var closeBtn=el('button');closeBtn.style.cssText='font-size:12px;padding:7px;border-radius:8px;cursor:pointer;width:100%;border:0.5px solid var(--bo);background:transparent;color:var(--tx)';
@@ -4593,6 +4597,7 @@ function openSansChambreModal(sansChambre){
 }
 
 function openAjouterModalForWorker(targetPt){
+  if(isViewer&&!isConcierge)return;
   var existing=document.getElementById('assign-modal-wrap');if(existing)existing.remove();
   var wrap=el('div');wrap.id='assign-modal-wrap';
   wrap.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center';
@@ -4629,6 +4634,7 @@ function openAjouterModalForWorker(targetPt){
 }
 
 function openAjouterModal(targetRoom){
+  if(isViewer&&!isConcierge)return;
   var existing=document.getElementById('ajouter-modal-wrap');if(existing)existing.remove();
   var wrap=el('div');wrap.id='ajouter-modal-wrap';
   wrap.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center';
