@@ -20,4 +20,4 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       - name: Deploy AZURA 46
-        run: firebase deploy --only hosting:azura46 --token "$FIREBASE_TOKEN" --project
+        run: firebase deploy --only hosting:azura46 --token "$FIREBASE_TOKEN" --project azura45-pointage --force
