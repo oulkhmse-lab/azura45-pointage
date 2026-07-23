@@ -1,7 +1,8 @@
 {
   "projects": {
     "default": "azura45-pointage",
-    "azura46": "azura46-pointage"
+    "azura46": "azura46-pointage",
+    "azura44": "azura44-pointage"
   },
   "targets": {
     "azura45-pointage": {
@@ -12,6 +13,11 @@
     "azura46-pointage": {
       "hosting": {
         "azura46": ["azura46-pointage"]
+      }
+    },
+    "azura44-pointage": {
+      "hosting": {
+        "azura44": ["azura44-pointage"]
       }
     }
   }
