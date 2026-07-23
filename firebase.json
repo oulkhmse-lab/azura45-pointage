@@ -3,13 +3,19 @@
     {
       "target": "azura45",
       "public": ".",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "azura46"],
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "azura46", "azura44"],
       "rewrites": [{"source": "/privacy-policy", "destination": "/privacy-policy.html"}, {"source": "**", "destination": "/index.html"}],
       "headers": [{"source": "/.well-known/assetlinks.json", "headers": [{"key": "Content-Type", "value": "application/json"}]}]
     },
     {
       "target": "azura46",
       "public": "azura46",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "headers": [{"source": "/.well-known/assetlinks.json", "headers": [{"key": "Content-Type", "value": "application/json"}]}]
+    },
+    {
+      "target": "azura44",
+      "public": "azura44",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "headers": [{"source": "/.well-known/assetlinks.json", "headers": [{"key": "Content-Type", "value": "application/json"}]}]
     }
